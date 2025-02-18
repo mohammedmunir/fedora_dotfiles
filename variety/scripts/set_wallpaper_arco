@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Wallpaper setting script for dwm on Fedora
+
+# Use the first parameter as the wallpaper path
+WP="$1"
+
+# Prefer feh for setting wallpaper in dwm
+if command -v feh >/dev/null 2>&1; then
+    feh --bg-fill "$WP" 2> /dev/null
+elif command -v nitrogen >/dev/null 2>&1; then
+    nitrogen --set-zoom-fill --save "$WP" 2> /dev/null
+fi
+
+exit 0

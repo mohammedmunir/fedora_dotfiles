@@ -1,0 +1,38 @@
+
+#!/bin/bash
+
+vm_name="microwin"
+win11user="abu"
+win11pass="mm"
+
+# Check the status of the VM
+vm_status=$(virsh --connect qemu:///system domstate $vm_name)
+
+if [ "$vm_status" != "running" ]; then
+    virsh --connect qemu:///system start $vm_name
+    notify-send "Virtual Machine $vm_name is starting..." "Waiting for VM to boot."
+    
+    # Poll to check if the VM is responsive (replace sleep)
+    sleep_counter=0
+    while [ $sleep_counter -lt 200 ]; do
+        if [ "$(virsh --connect qemu:///system domstate $vm_name)" == "running" ]; then
+            break
+        fi
+        sleep 5
+        sleep_counter=$((sleep_counter + 5))
+    done
+else
+    notify-send "Virtual Machine $vm_name is already running." "Launching xfreerdp now!"
+fi
+
+# Find the IP address of the VM using virsh
+ip_address=$(virsh --connect qemu:///system domifaddr $vm_name | grep -oP '(\d{1,3}\.){3}\d{1,3}')
+
+if [ -z "$ip_address" ]; then
+    notify-send "Failed to obtain IP address for $vm_name."
+    exit 1
+fi
+
+# Launch xfreerdp with the obtained IP address
+notify-send "Starting xfreerdp now..." "Connecting to $ip_address"
+xfreerdp /grab-keyboard /v:$ip_address /size:100% /cert:ignore /u:$win11user /p:$win11pass /dynamic-resolution &

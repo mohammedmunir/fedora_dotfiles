@@ -1,0 +1,8 @@
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+cd ~/ai/roop-unleashed || exit
+source roopenv/bin/activate
+python3 run.py
+

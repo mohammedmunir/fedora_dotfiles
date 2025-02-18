@@ -1,0 +1,7 @@
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+#vivaldi --app=https://www.youtube.com/feed/subscriptions
+thorium-browser --app=https://www.youtube.com/feed/subscriptions &
+

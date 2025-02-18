@@ -1,0 +1,5 @@
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+thorium-browser --app=http://chat.mohomes.uk/

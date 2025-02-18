@@ -1,0 +1,8 @@
+# Map Button 9 to Windows key + 9 (Switch to desktop 9)
+# xev | grep button
+# 
+"xdotool key Super+9"
+    b:9
+# Shift + Button 9: Move to desktop 9 and open Thunar
+"xdotool set_desktop 8 && thunar && sleep 0.5 && wmctrl -r Thunar -t 8"
+    Shift + b:9

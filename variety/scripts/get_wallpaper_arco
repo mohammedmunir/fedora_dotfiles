@@ -1,0 +1,14 @@
+#!/bin/bash
+# Script to get current wallpaper path for dwm/Fedora
+
+# Gnome/MATE fallback
+if command -v gsettings >/dev/null 2>&1; then
+    gsettings get org.gnome.desktop.background picture-uri | sed -e "s/^'//;s/'$//" | sed -e "s/^file:\/\///"
+# Feh fallback
+elif [ -f ~/.fehbg ]; then
+    sed -n "s/.*\('[^']*'\).*/\1/p" ~/.fehbg | tr -d "'"
+# Generic fallback
+else
+    echo "Could not determine current wallpaper" >&2
+    exit 1
+fi
