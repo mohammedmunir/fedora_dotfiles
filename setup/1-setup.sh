@@ -48,7 +48,7 @@ install_gnome_tools() {
 # Function to install essential packages
 install_essential_packages() {
     echo "Installing essential packages..."
-    sudo dnf5 install -y fastfetch mpv wget git gcc make python3 python3-pip unrar unzip cargo p7zip p7zip-plugins ntfs-3g htop java-17-openjdk android-tools vlc
+    sudo dnf5 install -y fastfetch mpv wget git gcc make python3 python3-pip unrar unzip cargo p7zip p7zip-plugins ntfs-3g htop java-17-openjdk android-tools vlc remmina
 }
 
 # Function to install useful GUI applications
