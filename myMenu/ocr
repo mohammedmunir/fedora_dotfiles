@@ -1,0 +1,5 @@
+#!/bin/bash
+flameshot gui -r > /tmp/screenshot.png
+tesseract /tmp/screenshot.png /tmp/output
+cat /tmp/output.txt
+gnome-text-editor /tmp/output.txt &
