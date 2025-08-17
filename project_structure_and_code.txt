@@ -1,0 +1,2621 @@
+[  172]  [00;34m.[0m/
+(0tqq (B[  296]  [00;34mmyMenu[0m/
+(0x   tqq (B[   85]  [01;32mAndroid[0m*
+(0x   tqq (B[  104]  [01;32mChromium[0m*
+(0x   tqq (B[  120]  [01;32mClaude[0m*
+(0x   tqq (B[  131]  [01;32mCoPilot[0m*
+(0x   tqq (B[   85]  [01;32mFileManager[0m*
+(0x   tqq (B[  131]  [01;32mGemini[0m*
+(0x   tqq (B[  124]  [01;32mGPT[0m*
+(0x   tqq (B[  127]  [01;32mGTasks[0m*
+(0x   tqq (B[  125]  [01;32mKeep[0m*
+(0x   tqq (B[  125]  [01;32mLGPT[0m*
+(0x   tqq (B[   91]  [01;32mLocalSend[0m*
+(0x   tqq (B[  149]  [01;32mocr[0m*
+(0x   tqq (B[ 1.1K]  [01;32mPowerMenu[0m*
+(0x   tqq (B[ 1.2K]  [01;32mquick_vm[0m*
+(0x   tqq (B[  154]  [01;32mROOP[0m*
+(0x   tqq (B[   85]  [01;32mScrcpy[0m*
+(0x   tqq (B[  128]  [01;32mTrading212[0m*
+(0x   tqq (B[  129]  [01;32mTradingView[0m*
+(0x   tqq (B[  111]  [01;32mVM_Win11[0m*
+(0x   tqq (B[  501]  [01;32mWaydroid[0m*
+(0x   tqq (B[  126]  [01;32mWhatsApp[0m*
+(0x   mqq (B[  205]  [01;32mYT[0m*
+(0tqq (B[  100]  [00;34mscripts[0m/
+(0x   tqq (B[  270]  [01;32mmyMenu.sh[0m*
+(0x   tqq (B[  847]  [01;32msetup-bridge.sh[0m*
+(0x   mqq (B[  16K]  [01;32msetup_todo_kivy_project.sh[0m*
+(0tqq (B[  208]  [00;34msetup[0m/
+(0x   tqq (B[  624]  [00m10-setup-ssh-server.sh[0m
+(0x   tqq (B[ 2.0K]  [01;32m1-setup.sh[0m*
+(0x   tqq (B[ 2.4K]  [01;32m2-git.sh[0m*
+(0x   tqq (B[  504]  [00m3-fonts.sh[0m
+(0x   tqq (B[  693]  [01;32m4-install_qemu.sh[0m*
+(0x   tqq (B[  798]  [01;32m5-setup-podman.sh[0m*
+(0x   tqq (B[ 2.2K]  [01;32mdisabledm.sh[0m*
+(0x   mqq (B[  450]  [01;32missue.sh[0m*
+(0tqq (B[   38]  [00;34mvariety[0m/
+(0x   tqq (B[   72]  [00;34mscripts[0m/
+(0x   x   tqq (B[  435]  [01;32mget_wallpaper_arco[0m*
+(0x   x   mqq (B[  348]  [01;32mset_wallpaper_arco[0m*
+(0x   mqq (B[  11K]  [00mvariety.conf[0m
+(0mqq (B[  59K]  [00mmirrorlist[0m
+
+6 directories, 37 files
+./variety/scripts/get_wallpaper_arco
+#!/bin/bash
+# Script to get current wallpaper path for dwm/Fedora
+
+# Gnome/MATE fallback
+if command -v gsettings >/dev/null 2>&1; then
+    gsettings get org.gnome.desktop.background picture-uri | sed -e "s/^'//;s/'$//" | sed -e "s/^file:\/\///"
+# Feh fallback
+elif [ -f ~/.fehbg ]; then
+    sed -n "s/.*\('[^']*'\).*/\1/p" ~/.fehbg | tr -d "'"
+# Generic fallback
+else
+    echo "Could not determine current wallpaper" >&2
+    exit 1
+fi
+
+./variety/scripts/set_wallpaper_arco
+#!/bin/bash
+
+# Wallpaper setting script for dwm on Fedora
+
+# Use the first parameter as the wallpaper path
+WP="$1"
+
+# Prefer feh for setting wallpaper in dwm
+if command -v feh >/dev/null 2>&1; then
+    feh --bg-fill "$WP" 2> /dev/null
+elif command -v nitrogen >/dev/null 2>&1; then
+    nitrogen --set-zoom-fill --save "$WP" 2> /dev/null
+fi
+
+exit 0
+
+./variety/variety.conf
+# change_on_start = <True or False>
+change_on_start = True
+
+# change_enabled = <True or False>
+change_enabled = True
+
+# change_interval = <interval in seconds - not less than 5>
+change_interval = 300
+
+# internet_enabled = <True or False>
+internet_enabled = True
+
+# safe_mode = <True or False>
+safe_mode = False
+
+# What scripts to use to set the wallpaper, or to obtain the path to the current wallpaper
+# Variety automatically manages and upgrades these two files:
+# ~/.config/variety/scripts/set_wallpaper
+# ~/.config/variety/scripts/get_wallpaper
+# If you want some custom logic to happen when Variety tries to set/get the wallpaper, e.g. because
+# you use some Desktop Environment that is not supported by default, please create copies of one
+# or both of these files, make the new files executable, and provide the new paths here.
+# Having a functional set_wallpaper script is essential, get_wallpaper is not so important.
+set_wallpaper_script = ~/.config/variety/scripts/set_wallpaper_arco
+get_wallpaper_script = ~/.config/variety/scripts/get_wallpaper_arco
+
+# download_folder = <some folder> - when not specified, the default is ~/.config/variety/Downloaded
+download_folder = ~/.config/variety/Downloaded
+
+# download_preference_ratio - if we have "unconsumed" download sources, we'll prefer to show a newly
+# downloaded image instead of an existing one in this percentage of the cases
+download_preference_ratio = 0.9
+
+# Determine if the download folder should not exceed a certain size (in megabytes)
+# quota_enabled = <True or False>
+# quota_size = <size in MB, minimum 50>
+quota_enabled = True
+quota_size = 1000
+
+# Wallhaven API key, by default it's an empty string
+wallhaven_api_key = ""
+
+# favorites_folder = <some folder> - when not specified, the default is ~/.config/variety/Favorites
+favorites_folder = ~/.config/variety/Favorites
+
+# Prefer Copy to Favorites or Move to Favorites operation (or both), depending on the folder of the current image
+# favorites_operations = <A list of directories and the preferred operation (Copy, Move or Both) for each of them>
+# The default is: Downloaded:Copy;Fetched:Move;Others:Copy
+# Order is important - the first matching entry will determine what operation(s) to show in the menu for a specific file
+# Special folder names you can use: Downloaded, Fetched and Others (same as "/" - use it as last entry to determine the default operation)
+# Example1: Downloaded:Copy;Fetched:Move;/pics/RandomImages:Move;/pics/OrganizedAlbums:Copy;Others:Copy
+# Example2: Others:Both - always show both Copy and Move to Favorites, no matter which image is shown
+# Move to Favorites is only shown when the user has write permissions over the file, otherwise we fallback to Copy
+favorites_operations = Downloaded:Copy;Fetched:Move;Others:Copy
+
+# wallpaper_auto_rotate = <True or False>
+wallpaper_auto_rotate = True
+
+# wallpaper_display_mode = <"os" |
+# "smart" | "zoom" | "fill-with-black" | "fill-with-blur" |
+# "gnome-zoom" | "gnome-centered" | "gnome-scaled" | "gnome-stretched" | "gnome-spanned", "gnome-wallpaper">
+wallpaper_display_mode = os
+
+# fetch_folder = <some folder> - when not specified, the default is ~/.config/variety/Fetched
+fetched_folder = ~/.config/variety/Fetched
+
+# Clipboard monitoring settings
+# clipboard_enabled = <True or False>
+# clipboard_use_whitelist = <will we use a hosts whitelist, or we'll fetch from everywhere - True or False>
+# clipboard_hosts = <comma-separated whitelist of hosts for which clipboard fetching is enabled>
+clipboard_enabled = False
+clipboard_use_whitelist = True
+clipboard_hosts = "wallhaven.cc,wallpapers.net,flickr.com,imgur.com,deviantart.com,interfacelift.com,vladstudio.com,imageshack.us,deviantart.net,imageshack.com"
+
+# Icon settings
+# icon = <Light, Dark, Current, 1, 2, 3, 4, None, or a full path to an image file>
+icon = Light
+
+# Prefer only images with this color:
+# desired_color_enabled = <True or False>
+# desired_color = <None or rgb like this: 100 150 200>
+# DISCLAIMER: This feature is still experimental
+desired_color_enabled = False
+desired_color = 160 160 160
+
+# Minimum size of images to use, as a percentage of the screen resolution
+# min_size_enabled = <True or False>
+# min_size = <Percentage>
+min_size_enabled = True
+min_size = 80
+
+# Should we use only landscape-oriented images?
+# use_landscape_enabled = <True or False>
+use_landscape_enabled = True
+
+# Prefer light or dark images
+# lightness_enabled = <True or False>
+# lightness_mode = <0 for Dark, 1 for Light>
+lightness_enabled = False
+lightness_mode = 0
+
+# Use a filter by rating?
+# min_rating_enabled = <True or False>
+# min_rating = <1 | 2 | 3 | 4 | 5>
+min_rating_enabled = False
+min_rating = 4
+
+# What parts of the initial wizard have we covered
+smart_notice_shown = False
+smart_register_shown = False
+stats_notice_shown = False
+
+# Are smart features enabled (i.e. data collection on Fav/Trash operations), also sync, and anonymous usage stats collection?
+# smart_enabled = <True or False>
+smart_enabled = False
+sync_enabled = True
+stats_enabled = True
+
+# Folder to copy the wallpaper image to and make it world-readable. Provides LightDM support.
+# copyto_enabled = <True or False>, default is False
+# copyto_folder = <Default or Path to a custom folder>, the default is Default
+# Default means to use the XDG Pictures folder when home folder is unencrypted and /usr/share/backgrounds when it is encrypted.
+copyto_enabled = False
+copyto_folder = Default
+
+# Clock settings
+# clock_enabled = <True or False>
+# clock_font = <FontName Size>, default is "Serif 70"
+# clock_date_font = <FontName Size>, default is "Serif 30"
+clock_enabled = False
+clock_font = Serif 70
+clock_date_font = Serif 30
+
+# clock_filter = <an ImageMagick filter, read below>
+#
+# The filter defines the ImageMagick command that Variety uses to render the clock on the wallpaper.
+# First some scaling is applied to get the image down to the screen size - this ensures
+# the final drawn clock won't be rescaled by the desktop wallpaper system.
+# Easiest way to see what's happening is to run variety with -v, enable clock and see what ImageMagick
+# commands Variety dumps in the log.
+#
+# The user may want to customize the following aspects:
+# fill - color of "filling"
+# stroke - color of outline
+# strokewidth - width of outline
+# gravity - in which corner to display the clock - SouthEast, NorthEast, SouthWest, NorthWest
+# annotate - these must be in the form 0x0+[%HOFFSET+X]+[%VOFFSET+Y], where you can edit X and Y -
+# distance from the screen corner defined by gravity. Write them in even if they are 0.
+#
+# The %HOFFSET and %VOFFSET parameters are there for Variety to replace in order to compensate for the
+# diferent dimensions of every image and screen.
+# The several %FONT parameters are there for Variety to replace with the font settings from the GUI.
+#
+# The texts can contain these symbols:
+#
+# %H - hours (24), %I - zero-padded hours (12), %l - hours (12), %p - am or pm, %M - minutes,
+# %A - day of week (full), %a - day of week abbreviation, %B - month name, %b - month abbreviation, %d - day of month, %Y - year.
+# The full list for these can be seen here: http://docs.python.org/library/datetime.html#strftime-strptime-behavior
+# Have in mind that Variety will not update the clock more often than once every minute, so using seconds (%S) for example is pointless
+#
+# A tutorial on "annotating" with ImageMagick that you may use as a reference: http://www.imagemagick.org/Usage/annotating/
+# You can get a very uniquely looking clock with some of the more advanced techniques (e.g. circle-shaped text, interesting colors and shading, etc....).
+
+clock_filter = "-density 100 -font `fc-match -f '%{file[0]}' '%CLOCK_FONT_NAME'` -pointsize %CLOCK_FONT_SIZE -gravity SouthEast -fill '#00000044' -annotate 0x0+[%HOFFSET+58]+[%VOFFSET+108] '%H:%M' -fill white -annotate 0x0+[%HOFFSET+60]+[%VOFFSET+110] '%H:%M' -font `fc-match -f '%{file[0]}' '%DATE_FONT_NAME'` -pointsize %DATE_FONT_SIZE -fill '#00000044' -annotate 0x0+[%HOFFSET+58]+[%VOFFSET+58] '%A, %B %d' -fill white -annotate 0x0+[%HOFFSET+60]+[%VOFFSET+60] '%A, %B %d'"
+
+# Quotes settings
+# quotes_enabled = <True or False>
+# quotes_font = <FontName Size>, default is "Serif 30"
+# quotes_text_color = <r g b>, default is 255 255 255
+# quotes_bg_color = <r g b>, default is 80 80 80
+# quotes_bg_opacity = <0-100>, default is 55
+# quotes_width = <0-100>, default is 70
+# quotes_hpos = <0-100>, default is 100
+# quotes_vpos = <0-100>, default is 40
+# quotes_max_length = a positive integer, quotes above this length will not be displayed
+# (as they often won't fit well on screen)
+# quotes_text_shadow = <True or False>, default is False
+# quotes_disabled_sources = <|-separated list of disabled quote plugin names>, default is "Urban Dictionary"
+# quotes_tags = <comma-separated list of tags>, default is empty
+# quotes_authors = <comma-separated list of authors>, default is empty
+# quotes_change_enabled = <True or False>
+# quotes_change_interval = <interval in seconds - not less than 10>, default is 300
+quotes_enabled = False
+quotes_font = Serif 30
+quotes_text_color = 255 255 255
+quotes_bg_color = 80 80 80
+quotes_bg_opacity = 55
+quotes_text_shadow = False
+quotes_width = 70
+quotes_hpos = 100
+quotes_vpos = 40
+quotes_max_length = 250
+quotes_disabled_sources = Urban Dictionary
+quotes_tags = ""
+quotes_authors = ""
+quotes_change_enabled = False
+quotes_change_interval = 300
+quotes_favorites_file = ~/.config/variety/favorite_quotes.txt
+quotes_favorites_format = fortune
+
+# Slideshow settings
+slideshow_favorites_enabled = True
+slideshow_sources_enabled = True
+slideshow_downloads_enabled = False
+slideshow_custom_enabled = False
+slideshow_custom_folder = ~/Pictures
+slideshow_sort_order = Random
+slideshow_monitor = All
+slideshow_mode = Fullscreen
+slideshow_seconds = 6.0
+slideshow_fade = 0.4
+slideshow_zoom = 0.2
+slideshow_pan = 0.05
+
+# List of sources
+# Each source is srcX = <enabled or not|source type - one of image, folder, flickr, wallhaven, etc.|location>
+# location depends on type - path or url or search options, or just a name for unconfigurable sources
+# Folders are included recursively
+# BE CAREFUL: all keys below (src1, src2, etc.) MUST be different
+[sources]
+src1 = True|favorites|The Favorites folder
+src2 = False|fetched|The Fetched folder
+src3 = True|folder|/usr/share/backgrounds
+src4 = False|flickr|user:www.flickr.com/photos/peter-levi/;user_id:93647178@N00;
+src5 = False|apod|NASA's Astronomy Picture of the Day
+src6 = False|bing|Bing Photo of the Day
+src7 = False|earthview|Google Earth View Wallpapers
+src8 = False|natgeo|National Geographic's photo of the day
+src9 = False|unsplash|High-resolution photos from Unsplash.com
+src10 = True|wallhaven|abstract
+src11 = True|wallhaven|minimal
+src12 = True|wallhaven|space
+src13 = True|wallhaven|scifi
+src14 = True|wallhaven|simple
+
+# Image filters to apply randomly to every wallpaper (ImageMagick is used for this)
+# Each filter is filterX = <enabled or not|filter name|arguments to pass to ImageMagick when calling convert>
+# BE CAREFUL: all keys below (filter1, filter2, etc.) MUST be different
+[filters]
+filter1 = False|Keep original|
+filter2 = False|Grayscale|-type Grayscale
+filter3 = False|Heavy blur|-scale 20% -blur 0x10 -resize 500%
+filter4 = False|Soft blur|-scale 20% -blur 0x2 -resize 500%
+filter5 = False|Oil painting|-paint 8
+filter6 = False|Pointilism|-spread 10 -noise 3
+filter7 = False|Pixellate|-scale 3% -scale 3333%
+
+./myMenu/Android
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+thunar
+./myMenu/Chromium
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+#vivaldi
+
+thorium-browser
+./myMenu/Claude
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+thorium-browser --app=https://claude.ai/
+
+./myMenu/CoPilot
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+thorium-browser --app=https://copilot.microsoft.com
+
+./myMenu/FileManager
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+thunar
+./myMenu/GPT
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+thorium-browser --app=https://chat.openai.com
+./myMenu/GTasks
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+thorium-browser --app=https://tasks.google.com/
+
+./myMenu/Gemini
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+thorium-browser --app=https://gemini.google.com/app
+
+./myMenu/Keep
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+thorium-browser --app=https://keep.google.com/
+./myMenu/LGPT
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+thorium-browser --app=http://chat.mohomes.uk/
+
+./myMenu/LocalSend
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+localsend &
+
+./myMenu/PowerMenu
+#!/bin/bash
+#  ____                                                    
+# |  _ \ _____      _____ _ __ _ __ ___   ___ _ __  _   _  
+# | |_) / _ \ \ /\ / / _ \ '__| '_ ` _ \ / _ \ '_ \| | | | 
+# |  __/ (_) \ V  V /  __/ |  | | | | | |  __/ | | | |_| | 
+# |_|   \___/ \_/\_/ \___|_|  |_| |_| |_|\___|_| |_|\__,_| 
+#                                                          
+#  
+# by Stephan Raabe (2023) 
+# ----------------------------------------------------- 
+echo $XDG_SESSION_TYPE
+if [ $XDG_SESSION_TYPE == "wayland" ]; then
+	lockapp=swaylock
+else
+	lockapp=slock
+fi
+echo "Using $lockapp to lock the screen."
+
+option1="  lock"
+option2="  logout"
+option3="  reboot"
+option4="  power off"
+
+options="$option1\n"
+options="$options$option2\n"
+options="$options$option3\n$option4"
+
+choice=$(echo -e "$options" | rofi -dmenu -replace -config ~/dotfiles/rofi/config-power.rasi -i -no-show-icons -l 4 -width 30 -p "Powermenu") 
+
+case $choice in
+	$option1)
+		$lockapp ;;
+	$option2)
+		qtile cmd-obj -o cmd -f shutdown ;;
+	$option3)
+		systemctl reboot ;;
+	$option4)
+		systemctl poweroff ;;
+esac
+
+
+./myMenu/ROOP
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+cd ~/ai/roop-unleashed || exit
+source roopenv/bin/activate
+python3 run.py
+
+
+./myMenu/Scrcpy
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+thunar
+./myMenu/Trading212
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+thorium-browser --app=https://live.trading212.com
+./myMenu/VM_Win11
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+~/dotfiles/scripts/launch_vm.sh
+
+./myMenu/Waydroid
+waydroid session stop
+notify-send "stoping waydroid"
+sleep 10
+
+pkill weston
+notify-send "killinf weston"
+sleep 10
+
+notify-send "starting wayland"
+systemctl start waydroid-container
+sleep 10
+
+notify-send "setting display"
+weston --xwayland -i0&
+export WAYLAND_DISPLAY=wayland-1
+sleep 10
+notify-send "waydroind full screen"
+waydroid show-full-ui &
+#sleep 30
+#sudo mount --bind ~/Downloads ~/.local/share/waydroid/data/media/0/Download
+
+#to exit
+#waydroid session stop
+# weston --xwayland --scale=2 & 
+#
+
+./myMenu/WhatsApp
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+thorium-browser --app=https://web.whatsapp.com/
+./myMenu/YT
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+#vivaldi --app=https://www.youtube.com/feed/subscriptions
+thorium-browser --app=https://www.youtube.com/feed/subscriptions &
+
+
+./myMenu/quick_vm
+
+#!/bin/bash
+
+vm_name="microwin"
+win11user="abu"
+win11pass="mm"
+
+# Check the status of the VM
+vm_status=$(virsh --connect qemu:///system domstate $vm_name)
+
+if [ "$vm_status" != "running" ]; then
+    virsh --connect qemu:///system start $vm_name
+    notify-send "Virtual Machine $vm_name is starting..." "Waiting for VM to boot."
+    
+    # Poll to check if the VM is responsive (replace sleep)
+    sleep_counter=0
+    while [ $sleep_counter -lt 200 ]; do
+        if [ "$(virsh --connect qemu:///system domstate $vm_name)" == "running" ]; then
+            break
+        fi
+        sleep 5
+        sleep_counter=$((sleep_counter + 5))
+    done
+else
+    notify-send "Virtual Machine $vm_name is already running." "Launching xfreerdp now!"
+fi
+
+# Find the IP address of the VM using virsh
+ip_address=$(virsh --connect qemu:///system domifaddr $vm_name | grep -oP '(\d{1,3}\.){3}\d{1,3}')
+
+if [ -z "$ip_address" ]; then
+    notify-send "Failed to obtain IP address for $vm_name."
+    exit 1
+fi
+
+# Launch xfreerdp with the obtained IP address
+notify-send "Starting xfreerdp now..." "Connecting to $ip_address"
+xfreerdp /grab-keyboard /v:$ip_address /size:100% /cert:ignore /u:$win11user /p:$win11pass /dynamic-resolution &
+
+./myMenu/TradingView
+#/bin/sh        
+#  
+# ----------------------------------------------------- 
+
+thorium-browser --app=https://www.tradingview.com/
+./myMenu/ocr
+#!/bin/bash
+flameshot gui -r > /tmp/screenshot.png
+tesseract /tmp/screenshot.png /tmp/output
+cat /tmp/output.txt
+gnome-text-editor /tmp/output.txt &
+
+./.xbindkeysrc
+# Map Button 9 to Windows key + 9 (Switch to desktop 9)
+# xev | grep button
+# 
+"xdotool key Super+9"
+    b:9
+# Shift + Button 9: Move to desktop 9 and open Thunar
+"xdotool set_desktop 8 && thunar && sleep 0.5 && wmctrl -r Thunar -t 8"
+    Shift + b:9
+
+./setup/3-fonts.sh
+# Create fonts directory if it doesn't exist
+mkdir -p ~/.local/share/fonts
+
+# Download and install MesloLGS Nerd Font
+wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/Meslo.zip
+unzip Meslo.zip -d ~/.local/share/fonts/
+fc-cache -fv
+# Create fonts directory if it doesn't exist
+mkdir -p ~/.local/share/fonts
+
+# Download and install MesloLGS Nerd Font
+wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/Meslo.zip
+unzip Meslo.zip -d ~/.local/share/fonts/
+fc-cache -fv
+
+./setup/disabledm.sh
+# ------------------------------------------------------
+# Disable display manager
+# ------------------------------------------------------
+disman=0
+if [ -f /etc/systemd/system/display-manager.service ]; then
+echo -e "${GREEN}"
+cat <<"EOF"
+ ___                            _              _   
+|_ _|_ __ ___  _ __   ___  _ __| |_ __ _ _ __ | |_ 
+ | || '_ ` _ \| '_ \ / _ \| '__| __/ _` | '_ \| __|
+ | || | | | | | |_) | (_) | |  | || (_| | | | | |_ 
+|___|_| |_| |_| .__/ \___/|_|   \__\__,_|_| |_|\__|
+              |_|                                  
+
+EOF
+echo -e "${NONE}"
+    echo "An active display manager has been dedected."
+    echo ""
+    if [ $profile == "Hyprland" ]; then
+        echo "IMPORTANT: Starting Hyprland from tty (terminal) with command Hyprland is recommended."
+        echo "Login with display managers could fail and could have negative side effects on some devices."
+    fi
+    if [ $profile == "Qtile" ]; then
+        echo "PLEASE NOTE: Qtile works with Display Managers."
+        echo "But if you want to use the tty based (terminal) login instead, you can disable the display manager now."
+    fi
+    if [ $profile == "All" ]; then
+        echo "IMPORTANT: Starting Hyprland from tty (terminal) with command Hyprland is recommended."
+        echo "Login with display managers could fail and could have negative side effects on some devices."
+        echo "PLEASE NOTE: Qtile works with Display Managers."
+        echo "But if you want to use the tty based (terminal) login instead, you can disable the display manager now."
+    fi
+    echo ""
+    while true; do
+        read -p "Do you want to deactive the current display manager (Yy/Nn): " yn
+        case $yn in
+            [Yy]* )
+                if [ -f /etc/systemd/system/display-manager.service ]; then
+                    sudo rm /etc/systemd/system/display-manager.service
+                    echo "Current display manager removed."
+                fi
+                disman=1
+            break;;
+            [Nn]* ) 
+                echo "Disable display manager skipped."
+                echo "You can run ~/dotfiles/hypr/script/disablewm.sh at a later point of time if needed."
+            break;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+    echo ""
+else
+    disman=1
+fi
+
+./setup/issue.sh
+# ------------------------------------------------------
+# Install tty login and issue
+# ------------------------------------------------------
+#
+# _____ _______   __  _             _       
+#|_   _|_   _\ \ / / | | ___   __ _(_)_ __  
+#  | |   | |  \ V /  | |/ _ \ / _` | | '_ \ 
+#  | |   | |   | |   | | (_) | (_| | | | | |
+#  |_|   |_|   |_|   |_|\___/ \__, |_|_| |_|
+#                            |___/         
+
+sudo cp ../login/issue /etc/issue
+
+./setup/2-git.sh
+#!/bin/bash
+
+# Function to configure git global settings
+configure_git() {
+    echo "Configuring Git settings..."
+    
+    git config --global pull.rebase false
+    git config --global user.name "Mohammed Munir"
+    git config --global user.email "mohammed.munir@gmail.com"
+    git config --global push.default simple
+    
+    # Set nano as default editor
+    if [ -x "$(command -v sudo)" ]; then
+        sudo git config --system core.editor nano
+    else
+        git config --system core.editor nano
+    fi
+    
+    # Uncomment these lines if you want to enable credential caching
+    # git config --global credential.helper cache
+    # git config --global credential.helper 'cache --timeout=32000'
+    
+    echo "Git configuration complete"
+}
+
+# Function to check if SSH key exists
+check_ssh_key() {
+    if [ ! -f ~/.ssh/id_ed25519 ]; then
+        echo "No SSH key found. Generating new key..."
+        ssh-keygen -t ed25519 -C "mohammed.munir@gmail.com"
+    else
+        echo "SSH key already exists"
+    fi
+}
+
+# Function to start SSH agent and add key
+setup_ssh_agent() {
+    echo "Starting SSH agent..."
+    eval "$(ssh-agent -s)"
+    ssh-add ~/.ssh/id_ed25519
+    echo "SSH key added to agent"
+    
+    echo -e "\nHere's your public SSH key. Add it to GitHub if you haven't already:"
+    cat ~/.ssh/id_ed25519.pub
+    echo -e "\nGo to GitHub -> Settings -> SSH Keys -> New SSH Key to add this key"
+    read -p "Press Enter once you've added the key to GitHub..."
+}
+
+# Function to set up Git repository
+setup_git_repo() {
+    read -p "Enter the local folder path: " local_path
+    read -p "Enter the GitHub repository name: " repo_name
+
+    # Change to the directory
+    cd "$local_path" || exit
+
+    # Initialize git if not already initialized
+    if [ ! -d .git ]; then
+        git init
+        echo "Git repository initialized"
+    fi
+
+    # Set up remote
+    git remote remove origin 2>/dev/null
+    git remote add origin "git@github.com:mohammedmunir/$repo_name.git"
+    echo "Remote origin added"
+
+    # Add and commit files
+    git add .
+    git commit -m "Initial commit"
+
+    # Rename current branch to main
+    git branch -M main
+
+    # Push to GitHub
+    echo "Attempting to push to GitHub..."
+    git push -u origin main
+}
+
+# Main script
+echo "GitHub Repository Setup Script"
+echo "----------------------------"
+
+# Run functions
+configure_git
+check_ssh_key
+setup_ssh_agent
+setup_git_repo
+
+echo "Setup complete!"
+
+./setup/10-setup-ssh-server.sh
+#!/bin/bash
+
+# Enable and start SSH
+sudo systemctl enable --now sshd
+
+# Display IP Address
+ip -4 addr show | grep -oP '(?<=inet\s)\d+\.\d+\.\d+\.\d+'
+
+# Install TigerVNC server
+sudo dnf install -y tigervnc-server
+
+# Create VNC user mapping
+echo ":1=$(whoami)" | sudo tee /etc/tigervnc/vncserver.users
+
+# Set VNC password (User will need to enter it)
+echo "Set your VNC password:"
+vncpasswd
+
+# Reload systemd daemon
+sudo systemctl daemon-reload
+
+# Restart VNC server
+sudo systemctl restart vncserver@:1
+
+# Enable VNC server at boot
+sudo systemctl enable vncserver@:1
+
+# Check VNC server status
+systemctl status vncserver@:1
+
+
+./setup/1-setup.sh
+#!/bin/bash
+
+# Function to configure DNF
+configure_dnf() {
+    echo "Configuring DNF..."
+    sudo tee -a /etc/dnf/dnf.conf > /dev/null <<EOL
+# Custom DNF configuration
+max_parallel_downloads=10
+fastestmirror=1
+assumeyes=True
+EOL
+}
+
+# Function to update system and firmware
+update_system() {
+    echo "Updating system..."
+    sudo dnf update -y
+}
+
+update_firmware() {
+    echo "Updating firmware..."
+    sudo fwupdmgr refresh --force
+    sudo fwupdmgr get-updates
+    sudo fwupdmgr update
+}
+
+# Function to install DNF5
+install_dnf5() {
+    echo "Installing DNF5..."
+    sudo dnf install -y dnf5 dnf5-plugins
+}
+
+# Function to add RPM Fusion repositories
+enable_rpm_fusion() {
+    echo "Enabling RPM Fusion repositories..."
+    sudo dnf install -y https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+    sudo dnf install -y https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    sudo dnf upgrade --refresh -y
+}
+
+# Function to install GNOME Tweaks and Extensions Manager
+install_gnome_tools() {
+    echo "Installing GNOME Tweaks and Extensions Manager..."
+    sudo dnf5 install -y gnome-tweaks
+    flatpak install -y flathub com.mattjakeman.ExtensionManager
+}
+
+# Function to install essential packages
+install_essential_packages() {
+    echo "Installing essential packages..."
+    sudo dnf5 install -y fastfetch mpv wget git gcc make python3 python3-pip unrar unzip cargo p7zip p7zip-plugins ntfs-3g htop java-17-openjdk android-tools vlc remmina tesseract tesseract-langpack-eng
+}
+
+# Function to install useful GUI applications
+install_gui_apps() {
+    echo "Installing useful GUI applications..."
+    flatpak install -y flathub io.missioncenter.MissionCenter
+}
+
+# Main function to run all tasks
+main() {
+    configure_dnf
+    update_system
+    update_firmware
+    install_dnf5
+    enable_rpm_fusion
+    install_gnome_tools
+    install_essential_packages
+    install_gui_apps
+    echo "All tasks completed. Rebooting the system..."
+    sudo reboot
+}
+
+# Run the main function
+main
+
+./setup/4-install_qemu.sh
+#!/bin/bash
+
+# Ensure the script is run as root
+if [[ $EUID -ne 0 ]]; then
+    echo "Please run this script as root or with sudo."
+    exit 1
+fi
+
+echo "Updating package list..."
+dnf update -y
+
+echo "Installing QEMU, KVM, and virtualization packages..."
+dnf install -y @virtualization
+
+echo "Enabling and starting libvirtd service..."
+systemctl enable --now libvirtd
+
+echo "Adding current user to the libvirt group..."
+usermod -aG libvirt $(logname)
+
+echo "Installing Virt-Manager for GUI support..."
+dnf install -y virt-manager
+
+echo "Installation complete! Restart your session or run 'newgrp libvirt' to apply group changes."
+echo "You can start Virt-Manager with the command: virt-manager"
+
+./setup/5-setup-podman.sh
+#!/bin/bash
+# File: 1-setup-podman.sh
+# Description: Install Podman and make it behave like Docker
+
+echo "📦 Installing Podman (Docker-compatible container engine)..."
+
+sudo dnf install -y \
+    podman \
+    podman-docker \
+    buildah \
+    skopeo \
+    fuse-overlayfs \
+    slirp4netns
+
+# Optional: Set up rootless containers better
+echo "Enabling rootless mode..."
+sudo sysctl kernel.unprivileged_userns_clone=1
+echo 'kernel.unprivileged_userns_clone=1' | sudo tee -a /etc/sysctl.conf
+
+# Enable Docker alias
+if ! grep -q "alias docker=podman" ~/.bashrc; then
+    echo 'alias docker=podman' >> ~/.bashrc
+    echo "✅ Added 'docker' alias to ~/.bashrc"
+fi
+
+# Reload shell config
+source ~/.bashrc
+
+echo "✅ Podman installed! You can now use 'docker' commands."
+echo "💡 Try: docker --version"
+./scripts/myMenu.sh
+#!/bin/bash
+# ----------------------------------------------------- 
+
+selected=$(ls -1 ~/dotfiles/myMenu  | rofi -dmenu -p "mymenu" -i)
+
+
+if [ "$selected" ]; then
+
+    echo "menu selected..."
+    echo $selected
+    exec "~/dotfiles/myMenu/$selected"
+    echo "Done."
+fi
+
+./scripts/setup-bridge.sh
+#!/bin/bash
+
+# Define bridge and interface variables
+BRIDGE="br0"
+ETH_IFACE="enp0s20f0u1u4"
+STATIC_IP="10.0.1.200/24"
+
+echo "Setting up network bridge: $BRIDGE"
+
+# Check if the bridge already exists
+if nmcli connection show "$BRIDGE" &>/dev/null; then
+    echo "Bridge $BRIDGE already exists. Deleting it..."
+    sudo nmcli connection delete "$BRIDGE"
+fi
+
+# Add the bridge and assign a static IP
+sudo nmcli connection add type bridge autoconnect yes con-name "$BRIDGE" ifname "$BRIDGE"
+sudo nmcli connection modify "$BRIDGE" ipv4.addresses "$STATIC_IP" ipv4.method manual
+
+# Attach the Ethernet interface to the bridge
+sudo nmcli connection add type ethernet slave-type bridge autoconnect yes con-name "${ETH_IFACE}-br" ifname "$ETH_IFACE" master "$BRIDGE"
+
+# Bring up the bridge
+sudo nmcli connection up "$BRIDGE"
+
+echo "Bridge setup complete!"
+
+
+./scripts/setup_todo_kivy_project.sh
+
+#!/bin/bash
+set -e
+
+# One-shot project setup for KivyMD To-Do + Pomodoro app
+PROJECT_DIR="${PWD}/my_todo_app"
+mkdir -p "${PROJECT_DIR}"
+cd "${PROJECT_DIR}"
+
+echo "Creating project in: ${PROJECT_DIR}"
+
+# ---------------------------
+# 1) main.py (KivyMD app)
+# ---------------------------
+cat > main.py <<'PY'
+"""
+main.py - KivyMD To-Do + Pomodoro App
+Features:
+- Add / remove / move up & down / skip to tomorrow / history / show hidden
+- Toggleable Pomodoro timer
+- Saves to data.json
+- Simple debug logging (DEBUG = True)
+"""
+from kivy.lang import Builder
+from kivy.clock import Clock
+from kivy.metrics import dp
+from kivy.core.window import Window
+from kivy.properties import StringProperty
+from kivymd.app import MDApp
+from kivymd.uix.snackbar import Snackbar
+import json, os, time
+from datetime import datetime
+
+DEBUG = True
+DATA_FILE = "data.json"
+KV_FILE = "todo.kv"
+
+def dbg(msg):
+    if DEBUG:
+        print(f"[DEBUG] {msg}")
+
+def today_str():
+    return datetime.now().strftime("%Y-%m-%d")
+
+def ensure_data():
+    if not os.path.exists(DATA_FILE):
+        default = {"date": today_str(), "tasks": [], "tomorrow": [], "history": []}
+        with open(DATA_FILE, "w") as f:
+            json.dump(default, f, indent=2)
+        dbg("Created default data.json")
+
+def load_data():
+    with open(DATA_FILE, "r") as f:
+        d = json.load(f)
+    dbg(f"Loaded data: {d.get('date')} tasks={len(d.get('tasks',[]))} tom={len(d.get('tomorrow',[]))}")
+    return d
+
+def save_data(data):
+    with open(DATA_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+    dbg("Saved data.json")
+
+class TodoApp(MDApp):
+    status_text = StringProperty("")
+
+    def build(self):
+        # load KV layout
+        Builder.load_file(KV_FILE)
+        ensure_data()
+        self.data = load_data()
+        self.rotate_if_needed()
+        # keep window small on desktop: center horizontally, near bottom
+        try:
+            Window.size = (420, 640)
+            screen_w, screen_h = Window.system_size
+            Window.left = int((screen_w - Window.width) / 2)
+            Window.top = int(screen_h - Window.height - 50)
+        except Exception as e:
+            dbg(f"Window positioning not applied: {e}")
+        return Builder.get_root()
+
+    def on_start(self):
+        self.root.ids.entry.text = ""
+        self.refresh_tasks()
+        Clock.schedule_interval(self.check_date_rotation, 30)  # every 30s
+
+    # -------------------
+    # Data helpers
+    # -------------------
+    def rotate_if_needed(self):
+        if self.data.get("date") != today_str():
+            dbg("Rotating 'tomorrow' into today")
+            self.data["date"] = today_str()
+            tom = self.data.get("tomorrow", [])
+            if tom:
+                self.data.setdefault("tasks", []).extend(tom)
+                self.data["tomorrow"] = []
+            for t in self.data.get("tasks", []):
+                t["done"] = False
+            save_data(self.data)
+
+    def check_date_rotation(self, dt):
+        old_date = self.data.get("date")
+        if old_date != today_str():
+            self.rotate_if_needed()
+            self.refresh_tasks()
+
+    # -------------------
+    # Task operations
+    # -------------------
+    def add_task(self, text=None):
+        if text is None:
+            text = self.root.ids.entry.text.strip()
+        if not text:
+            Snackbar(text="Task cannot be empty").open()
+            return
+        tid = max([t.get("id",0) for t in self.data.get("tasks",[])+self.data.get("tomorrow",[])] + [0]) + 1
+        task = {"id": tid, "text": text, "done": False, "hidden": False}
+        self.data.setdefault("tasks", []).append(task)
+        # add to history
+        if text not in self.data.setdefault("history", []):
+            self.data["history"].append(text)
+        save_data(self.data)
+        self.root.ids.entry.text = ""
+        self.refresh_tasks()
+        dbg(f"Added task: {text}")
+
+    def add_from_history(self, text):
+        if not text:
+            return
+        self.add_task(text)
+
+    def toggle_done(self, tid):
+        for t in self.data.get("tasks", []):
+            if t["id"] == tid:
+                t["done"] = not t.get("done", False)
+                dbg(f"Toggled done {tid} -> {t['done']}")
+                break
+        save_data(self.data)
+        self.refresh_tasks()
+
+    def delete_task(self, tid):
+        self.data["tasks"] = [t for t in self.data.get("tasks", []) if t["id"] != tid]
+        save_data(self.data)
+        self.refresh_tasks()
+        dbg(f"Deleted {tid}")
+
+    def hide_task(self, tid):
+        for t in self.data.get("tasks", []):
+            if t["id"] == tid:
+                t["hidden"] = True
+                break
+        save_data(self.data)
+        self.refresh_tasks()
+
+    def unhide_task(self, tid):
+        for t in self.data.get("tasks", []):
+            if t["id"] == tid:
+                t["hidden"] = False
+                break
+        save_data(self.data)
+        self.refresh_tasks()
+
+    def skip_to_tomorrow(self, tid):
+        for i, t in enumerate(self.data.get("tasks", [])):
+            if t["id"] == tid:
+                item = self.data["tasks"].pop(i)
+                item["done"] = False
+                item["hidden"] = False
+                self.data.setdefault("tomorrow", []).append(item)
+                save_data(self.data)
+                self.refresh_tasks()
+                dbg(f"Skipped {tid} to tomorrow")
+                return
+
+    def move_task(self, tid, direction):
+        tasks = self.data.get("tasks", [])
+        for i, t in enumerate(tasks):
+            if t["id"] == tid:
+                j = i + direction
+                if 0 <= j < len(tasks):
+                    tasks[i], tasks[j] = tasks[j], tasks[i]
+                    save_data(self.data)
+                    self.refresh_tasks()
+                    dbg(f"Moved {tid} {'up' if direction<0 else 'down'}")
+                return
+
+    # -------------------
+    # UI refresh
+    # -------------------
+    def refresh_tasks(self):
+        md_list = self.root.ids.task_list
+        md_list.clear_widgets()
+        visible = [t for t in self.data.get("tasks", []) if not t.get("hidden", False)]
+        # highlight first incomplete
+        next_found = False
+        done_count = 0
+        for t in visible:
+            item = self._build_task_item(t, highlight= (not t.get("done") and not next_found))
+            md_list.add_widget(item)
+            if not next_found and not t.get("done"):
+                next_found = True
+            if t.get("done"):
+                done_count += 1
+        total = len(visible)
+        percent = int((done_count/total)*100) if total else 0
+        self.root.ids.progress.value = percent
+        self.root.ids.progress_label.text = f"{done_count}/{total} done ({percent}%)"
+
+    def _build_task_item(self, t, highlight=False):
+        from kivymd.uix.list import OneLineAvatarIconListItem
+        from kivymd.uix.selectioncontrol import MDCheckbox
+        from kivymd.uix.boxlayout import MDBoxLayout
+        from kivymd.uix.button import MDIconButton
+
+        li = OneLineAvatarIconListItem(text=t["text"], on_release=lambda x=None: self.toggle_done(t["id"]))
+        # left checkbox
+        chk = MDCheckbox(size_hint=(None,None), size=(dp(24), dp(24)))
+        chk.active = t.get("done", False)
+        chk.bind(active=lambda inst, val: self.toggle_done(t["id"]))
+        li.add_widget(chk)
+        # right controls
+        box = MDBoxLayout(size_hint=(None,None), width=dp(180))
+        up = MDIconButton(icon="arrow-up", on_release=lambda x: self.move_task(t["id"], -1))
+        down = MDIconButton(icon="arrow-down", on_release=lambda x: self.move_task(t["id"], 1))
+        skip = MDIconButton(icon="skip-next", on_release=lambda x: self.skip_to_tomorrow(t["id"]))
+        hide = MDIconButton(icon="eye-off" if not t.get("hidden") else "eye", on_release=lambda x: self.hide_task(t["id"]) if not t.get("hidden") else self.unhide_task(t["id"]))
+        delete = MDIconButton(icon="delete", on_release=lambda x: self.delete_task(t["id"]))
+        box.add_widget(up); box.add_widget(down); box.add_widget(skip); box.add_widget(hide); box.add_widget(delete)
+        li.add_widget(box)
+        if t.get("done"):
+            li.md_bg_color = (0.82, 0.95, 0.85, 1)  # light green
+        else:
+            if highlight:
+                li.md_bg_color = (1, 0.97, 0.85, 1)  # light yellow
+            else:
+                li.md_bg_color = (1,1,1,1)
+        return li
+
+    # -------------------
+    # History dialog
+    # -------------------
+    def open_history(self):
+        items = self.data.get("history", [])
+        if not items:
+            Snackbar(text="History is empty").open()
+            return
+        from kivymd.uix.dialog import MDDialog
+        from kivymd.uix.button import MDRaisedButton
+        btns = [MDRaisedButton(text=i, on_release=lambda inst, t=i: self._history_pick(t)) for i in items]
+        dlg = MDDialog(title="History", size_hint=(0.8, None), items=btns)
+        dlg.open()
+
+    def _history_pick(self, text):
+        self.add_task(text)
+
+    # -------------------
+    # Pomodoro
+    # -------------------
+    def toggle_timer_ui(self):
+        area = self.root.ids.timer_area
+        if area.height == 0:
+            area.height = dp(48)
+        else:
+            area.height = 0
+
+    def start_pomodoro(self):
+        if getattr(self, "pomodoro_running", False):
+            return
+        self.pomodoro_running = True
+        self.pomodoro_seconds = 25*60
+        self.update_timer()
+        dbg("Pomodoro started")
+
+    def stop_pomodoro(self):
+        self.pomodoro_running = False
+        if getattr(self, "pomodoro_event", None):
+            self.pomodoro_event.cancel()
+            self.pomodoro_event = None
+        self.root.ids.timer_label.text = "25:00"
+        dbg("Pomodoro stopped")
+
+    def update_timer(self, *args):
+        if not getattr(self, "pomodoro_running", False):
+            return
+        mins = self.pomodoro_seconds // 60
+        secs = self.pomodoro_seconds % 60
+        self.root.ids.timer_label.text = f"{mins:02d}:{secs:02d}"
+        if self.pomodoro_seconds <= 0:
+            self.pomodoro_running = False
+            Snackbar(text="Pomodoro complete - take a break").open()
+            dbg("Pomodoro complete")
+            return
+        self.pomodoro_seconds -= 1
+        self.pomodoro_event = Clock.schedule_once(self.update_timer, 1)
+
+if __name__ == "__main__":
+    TodoApp().run()
+PY
+
+# ---------------------------
+# 2) KV file layout
+# ---------------------------
+cat > todo.kv <<'KV'
+#:import dp kivy.metrics.dp
+BoxLayout:
+    orientation: "vertical"
+    padding: dp(8)
+    spacing: dp(6)
+
+    MDToolbar:
+        title: "Daily To-Do"
+        elevation: 10
+        left_action_items: [["menu", lambda x: None]]
+        right_action_items: [["history", lambda x: app.open_history()], ["timer", lambda x: app.toggle_timer_ui()]]
+
+    MDProgressBar:
+        id: progress
+        value: 0
+        type: 'determinate'
+
+    ScrollView:
+        MDList:
+            id: task_list
+
+    MDBoxLayout:
+        adaptive_height: True
+        spacing: dp(6)
+        MDTextField:
+            id: entry
+            hint_text: "Add a task"
+            on_text_validate: app.add_task(entry.text)
+
+        MDRaisedButton:
+            text: "Add"
+            on_release: app.add_task(entry.text)
+
+    MDBoxLayout:
+        adaptive_height: True
+        spacing: dp(6)
+        MDFlatButton:
+            text: "Clear Completed"
+            on_release: app.data["tasks"][:] = [t for t in app.data.get("tasks",[]) if not t.get("done",False)]; app.refresh_tasks(); app.save_data(app.data)
+        MDFlatButton:
+            text: "Reset Day"
+            on_release: app.rotate_if_needed(); app.refresh_tasks(); app.save_data(app.data)
+
+    MDBoxLayout:
+        id: timer_area
+        size_hint_y: None
+        height: 0
+        spacing: dp(6)
+        padding: dp(6)
+        MDLabel:
+            id: timer_label
+            text: "25:00"
+            halign: "center"
+        MDRaisedButton:
+            text: "Start"
+            on_release: app.start_pomodoro()
+        MDRaisedButton:
+            text: "Stop"
+            on_release: app.stop_pomodoro()
+KV
+
+# ---------------------------
+# 3) data.json default
+# ---------------------------
+cat > data.json <<'JSON'
+{
+  "date": "",
+  "tasks": [],
+  "tomorrow": [],
+  "history": []
+}
+JSON
+
+# ---------------------------
+# 4) requirements.txt
+# ---------------------------
+cat > requirements.txt <<'REQ'
+kivy
+kivymd
+REQ
+
+# ---------------------------
+# 5) buildozer.spec (starter)
+# ---------------------------
+cat > buildozer.spec <<'SPEC'
+[app]
+title = DailyToDo
+package.name = dailytodo
+package.domain = org.example
+source.dir = .
+source.include_exts = py,kv,png,jpg,ttf,atlas
+version = 0.1
+requirements = python3,kivy,kivymd
+orientation = portrait
+fullscreen = 0
+
+[buildozer]
+log_level = 2
+warn_on_root = 0
+SPEC
+
+# ---------------------------
+# 6) Dockerfile.dev (run GUI on Linux desktop via X11)
+# ---------------------------
+cat > Dockerfile.dev <<'DOCKDEV'
+FROM python:3.10
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libgl1-mesa-dev \
+    libgles2-mesa-dev \
+    libgstreamer1.0-dev \
+    gstreamer1.0-plugins-base \
+    gstreamer1.0-plugins-good \
+    gstreamer1.0-plugins-bad \
+    gstreamer1.0-plugins-ugly \
+    x11-apps \
+    libxcursor1 libxrandr2 libxinerama1 libxi6 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . /app
+CMD ["python", "main.py"]
+DOCKDEV
+
+# ---------------------------
+# 7) Dockerfile.apk (buildozer)
+# ---------------------------
+cat > Dockerfile.apk <<'DOCKAPK'
+FROM python:3.10
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+    openjdk-17-jdk unzip git zip wget curl \
+    build-essential libffi-dev libssl-dev libsqlite3-dev zlib1g-dev \
+    libncurses5-dev libgdbm-dev libbz2-dev libreadline-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --upgrade pip setuptools wheel
+RUN pip install --no-cache-dir buildozer cython virtualenv
+
+WORKDIR /app
+COPY . /app
+CMD ["bash"]
+DOCKAPK
+
+# ---------------------------
+# 8) run_dev.sh (X11 forwarding)
+# ---------------------------
+cat > run_dev.sh <<'RUNDEV'
+#!/bin/bash
+set -e
+IMAGE_NAME="kivy-dev-image"
+docker build -t $IMAGE_NAME -f Dockerfile.dev .
+# Allow container to use the host X server
+xhost +local:docker
+docker run --rm -it \
+  -e DISPLAY=$DISPLAY \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v "$(pwd)":/app \
+  $IMAGE_NAME
+# revoke access
+xhost -local:docker
+RUNDEV
+chmod +x run_dev.sh
+
+# ---------------------------
+# 9) build_android.sh (build apk)
+# ---------------------------
+cat > build_android.sh <<'BUILDBASH'
+#!/bin/bash
+set -e
+IMAGE_NAME="kivy-apk-builder"
+docker build -t $IMAGE_NAME -f Dockerfile.apk .
+# mount project and run buildozer commands inside container
+docker run --rm -it -v "$(pwd)":/app $IMAGE_NAME bash -c "
+  cd /app
+  if [ ! -f buildozer.spec ]; then
+    buildozer init
+    echo 'Please check buildozer.spec and re-run build_android.sh'
+    exit 0
+  fi
+  buildozer -v android debug
+"
+echo "APK output (if successful) will be in ./bin/"
+BUILDBASH
+chmod +x build_android.sh
+
+# ---------------------------
+# 10) README summary
+# ---------------------------
+cat > README.txt <<'README'
+Project: my_todo_app
+
+Run GUI locally (Linux) using Docker with X11:
+  ./run_dev.sh
+
+Build Android APK using Docker (Buildozer):
+  ./build_android.sh
+  APK will be in ./bin/
+
+To run natively on Windows or Linux without Docker:
+  pip install -r requirements.txt
+  python main.py
+
+Edit buildozer.spec for package name/title before building APK.
+README
+
+echo "Setup finished. Project created at: ${PROJECT_DIR}"
+echo ""
+echo "Next steps:"
+echo "  cd ${PROJECT_DIR}"
+echo "  ./run_dev.sh          # test GUI on Linux (needs X11)"
+echo "  ./build_android.sh    # builds APK (first-run buildozer may download SDK/NDK)"
+echo ""
+echo "Tip: edit buildozer.spec to change package id/title before building an APK."
+
+./mirrorlist
+## Best Arch Linux servers worldwide from arcolinux-nemesis
+
+Server = https://geo.mirror.pkgbuild.com/$repo/os/$arch
+Server = https://mirrors.kernel.org/archlinux/$repo/os/$arch
+Server = http://mirror.rackspace.com/archlinux/$repo/os/$arch
+Server = https://mirror.rackspace.com/archlinux/$repo/os/$arch
+Server = https://mirror.osbeck.com/archlinux/$repo/os/$arch
+Server = http://mirror.osbeck.com/archlinux/$repo/os/$arch
+##
+## Arch Linux repository mirrorlist
+## Generated on 2025-02-18
+##
+
+## Worldwide
+Server = https://geo.mirror.pkgbuild.com/$repo/os/$arch
+Server = https://ftpmirror.infania.net/mirror/archlinux/$repo/os/$arch
+Server = http://mirror.rackspace.com/archlinux/$repo/os/$arch
+Server = https://mirror.rackspace.com/archlinux/$repo/os/$arch
+
+## Albania
+Server = http://al.arch.niranjan.co/$repo/os/$arch
+Server = https://al.arch.niranjan.co/$repo/os/$arch
+
+## Australia
+Server = https://mirror.aarnet.edu.au/pub/archlinux/$repo/os/$arch
+Server = http://au.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://au.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = http://archlinux.mirror.digitalpacific.com.au/$repo/os/$arch
+Server = https://archlinux.mirror.digitalpacific.com.au/$repo/os/$arch
+Server = http://gsl-syd.mm.fcix.net/archlinux/$repo/os/$arch
+Server = https://gsl-syd.mm.fcix.net/archlinux/$repo/os/$arch
+Server = https://sydney.mirror.pkgbuild.com/$repo/os/$arch
+Server = http://ftp.iinet.net.au/pub/archlinux/$repo/os/$arch
+Server = http://mirror.internode.on.net/pub/archlinux/$repo/os/$arch
+Server = https://au.arch.niranjan.co/$repo/os/$arch
+Server = http://syd.mirror.rackspace.com/archlinux/$repo/os/$arch
+Server = https://syd.mirror.rackspace.com/archlinux/$repo/os/$arch
+Server = http://ftp.swin.edu.au/archlinux/$repo/os/$arch
+
+## Austria
+Server = http://mirror.alwyzon.net/archlinux/$repo/os/$arch
+Server = https://mirror.alwyzon.net/archlinux/$repo/os/$arch
+Server = http://at.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://at.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = http://mirror.digitalnova.at/archlinux/$repo/os/$arch
+Server = http://mirror.easyname.at/archlinux/$repo/os/$arch
+Server = https://at.arch.mirror.kescher.at/$repo/os/$arch
+Server = http://mirror.reisenbauer.ee/archlinux/$repo/os/$arch
+Server = https://mirror.reisenbauer.ee/archlinux/$repo/os/$arch
+Server = https://at-vie.soulharsh007.dev/archlinux/$repo/os/$arch
+
+## Azerbaijan
+Server = http://mirror.hostart.az/archlinux/$repo/os/$arch
+Server = https://mirror.hostart.az/archlinux/$repo/os/$arch
+Server = http://mirror.ourhost.az/archlinux/$repo/os/$arch
+Server = https://mirror.ourhost.az/archlinux/$repo/os/$arch
+Server = http://mirror.yer.az/archlinux/$repo/os/$arch
+Server = https://mirror.yer.az/archlinux/$repo/os/$arch
+
+## Bangladesh
+Server = http://mirror.xeonbd.com/archlinux/$repo/os/$arch
+Server = https://mirror.xeonbd.com/archlinux/$repo/os/$arch
+
+## Belarus
+Server = http://ftp.byfly.by/pub/archlinux/$repo/os/$arch
+Server = http://mirror.datacenter.by/pub/archlinux/$repo/os/$arch
+
+## Belgium
+Server = http://archlinux.cu.be/$repo/os/$arch
+Server = http://mirror.jonas-prz.be/$repo/os/$arch
+Server = https://mirror.jonas-prz.be/$repo/os/$arch
+Server = http://archlinux.mirror.kangaroot.net/$repo/os/$arch
+Server = http://mirror.tiguinet.net/arch/$repo/os/$arch
+Server = https://mirror.tiguinet.net/arch/$repo/os/$arch
+
+## Bosnia and Herzegovina
+Server = http://archlinux.mirror.ba/$repo/os/$arch
+
+## Brazil
+Server = http://archlinux.c3sl.ufpr.br/$repo/os/$arch
+Server = https://archlinux.c3sl.ufpr.br/$repo/os/$arch
+Server = http://www.caco.ic.unicamp.br/archlinux/$repo/os/$arch
+Server = https://www.caco.ic.unicamp.br/archlinux/$repo/os/$arch
+Server = http://br.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://br.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = http://linorg.usp.br/archlinux/$repo/os/$arch
+Server = http://archlinux.pop-es.rnp.br/$repo/os/$arch
+Server = http://mirror.ufam.edu.br/archlinux/$repo/os/$arch
+Server = http://mirror.ufscar.br/archlinux/$repo/os/$arch
+Server = https://mirror.ufscar.br/archlinux/$repo/os/$arch
+Server = http://mirrors.ic.unicamp.br/archlinux/$repo/os/$arch
+Server = https://mirrors.ic.unicamp.br/archlinux/$repo/os/$arch
+
+## Bulgaria
+Server = http://mirror.host.ag/archlinux/$repo/os/$arch
+Server = http://mirror.telepoint.bg/archlinux/$repo/os/$arch
+Server = https://mirror.telepoint.bg/archlinux/$repo/os/$arch
+Server = http://mirrors.uni-plovdiv.net/archlinux/$repo/os/$arch
+Server = https://mirrors.uni-plovdiv.net/archlinux/$repo/os/$arch
+
+## Cambodia
+Server = http://mirror.sabay.com.kh/archlinux/$repo/os/$arch
+Server = https://mirror.sabay.com.kh/archlinux/$repo/os/$arch
+
+## Canada
+Server = http://mirror.0xem.ma/arch/$repo/os/$arch
+Server = https://mirror.0xem.ma/arch/$repo/os/$arch
+Server = http://mirror.accuris.ca/archlinux/$repo/os/$arch
+Server = https://mirror.accuris.ca/archlinux/$repo/os/$arch
+Server = https://arch.mirror.winslow.cloud/$repo/os/$arch
+Server = http://mirror.cedille.club/archlinux/$repo/os/$arch
+Server = http://ca.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://ca.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = http://archlinux.mirror.colo-serv.net/$repo/os/$arch
+Server = http://mirror.cpsc.ucalgary.ca/mirror/archlinux.org/$repo/os/$arch
+Server = https://mirror.cpsc.ucalgary.ca/mirror/archlinux.org/$repo/os/$arch
+Server = http://mirror.csclub.uwaterloo.ca/archlinux/$repo/os/$arch
+Server = https://mirror.csclub.uwaterloo.ca/archlinux/$repo/os/$arch
+Server = http://mirror2.evolution-host.com/archlinux/$repo/os/$arch
+Server = https://mirror2.evolution-host.com/archlinux/$repo/os/$arch
+Server = http://mirror.its.dal.ca/archlinux/$repo/os/$arch
+Server = http://mirror.quantum5.ca/archlinux/$repo/os/$arch
+Server = https://mirror.quantum5.ca/archlinux/$repo/os/$arch
+Server = http://muug.ca/mirror/archlinux/$repo/os/$arch
+Server = https://muug.ca/mirror/archlinux/$repo/os/$arch
+Server = http://mirrors.pablonara.com/archlinux/$repo/os/$arch
+Server = https://mirrors.pablonara.com/archlinux/$repo/os/$arch
+Server = https://upstream-1.pablonara.com/archlinux/$repo/os/$arch
+Server = http://mirror.powerfly.ca/archlinux/$repo/os/$arch
+Server = https://mirror.powerfly.ca/archlinux/$repo/os/$arch
+Server = https://mirror.qctronics.com/archlinux/$repo/os/$arch
+Server = http://archlinux.mirror.rafal.ca/$repo/os/$arch
+Server = http://mirror.scd31.com/arch/$repo/os/$arch
+Server = https://mirror.scd31.com/arch/$repo/os/$arch
+Server = http://mirror.xenyth.net/archlinux/$repo/os/$arch
+Server = https://mirror.xenyth.net/archlinux/$repo/os/$arch
+Server = http://mirror.yuri.so/arch/$repo/os/$arch
+Server = https://mirror.yuri.so/arch/$repo/os/$arch
+
+## Chile
+Server = http://mirror.anquan.cl/archlinux/$repo/os/$arch
+Server = https://mirror.anquan.cl/archlinux/$repo/os/$arch
+Server = http://elmirror.cl/archlinux/$repo/os/$arch
+Server = https://elmirror.cl/archlinux/$repo/os/$arch
+Server = http://mirror.hnd.cl/archlinux/$repo/os/$arch
+Server = https://mirror.hnd.cl/archlinux/$repo/os/$arch
+Server = http://mirror.ufro.cl/archlinux/$repo/os/$arch
+Server = https://mirror.ufro.cl/archlinux/$repo/os/$arch
+
+## China
+Server = http://mirrors.163.com/archlinux/$repo/os/$arch
+Server = http://mirrors.aliyun.com/archlinux/$repo/os/$arch
+Server = https://mirrors.aliyun.com/archlinux/$repo/os/$arch
+Server = http://mirrors.bfsu.edu.cn/archlinux/$repo/os/$arch
+Server = https://mirrors.bfsu.edu.cn/archlinux/$repo/os/$arch
+Server = http://mirrors.cqu.edu.cn/archlinux/$repo/os/$arch
+Server = https://mirrors.cqu.edu.cn/archlinux/$repo/os/$arch
+Server = http://mirrors.hit.edu.cn/archlinux/$repo/os/$arch
+Server = https://mirrors.hit.edu.cn/archlinux/$repo/os/$arch
+Server = http://mirrors.hust.edu.cn/archlinux/$repo/os/$arch
+Server = https://mirrors.hust.edu.cn/archlinux/$repo/os/$arch
+Server = http://mirrors.jcut.edu.cn/archlinux/$repo/os/$arch
+Server = https://mirrors.jcut.edu.cn/archlinux/$repo/os/$arch
+Server = http://mirrors.jlu.edu.cn/archlinux/$repo/os/$arch
+Server = https://mirrors.jlu.edu.cn/archlinux/$repo/os/$arch
+Server = http://mirrors.jxust.edu.cn/archlinux/$repo/os/$arch
+Server = https://mirrors.jxust.edu.cn/archlinux/$repo/os/$arch
+Server = http://mirror.lzu.edu.cn/archlinux/$repo/os/$arch
+Server = http://mirrors.neusoft.edu.cn/archlinux/$repo/os/$arch
+Server = https://mirrors.neusoft.edu.cn/archlinux/$repo/os/$arch
+Server = http://mirrors.nju.edu.cn/archlinux/$repo/os/$arch
+Server = https://mirrors.nju.edu.cn/archlinux/$repo/os/$arch
+Server = https://mirrors.njupt.edu.cn/archlinux/$repo/os/$arch
+Server = http://mirror.nyist.edu.cn/archlinux/$repo/os/$arch
+Server = https://mirror.nyist.edu.cn/archlinux/$repo/os/$arch
+Server = https://mirrors.qlu.edu.cn/archlinux/$repo/os/$arch
+Server = http://mirrors.qvq.net.cn/archlinux/$repo/os/$arch
+Server = https://mirrors.qvq.net.cn/archlinux/$repo/os/$arch
+Server = http://mirror.redrock.team/archlinux/$repo/os/$arch
+Server = https://mirror.redrock.team/archlinux/$repo/os/$arch
+Server = http://mirrors.shanghaitech.edu.cn/archlinux/$repo/os/$arch
+Server = https://mirrors.shanghaitech.edu.cn/archlinux/$repo/os/$arch
+Server = https://mirrors.sjtug.sjtu.edu.cn/archlinux/$repo/os/$arch
+Server = http://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch
+Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch
+Server = http://mirrors.ustc.edu.cn/archlinux/$repo/os/$arch
+Server = https://mirrors.ustc.edu.cn/archlinux/$repo/os/$arch
+Server = http://mirrors.wsyu.edu.cn/archlinux/$repo/os/$arch
+Server = https://mirrors.wsyu.edu.cn/archlinux/$repo/os/$arch
+Server = https://mirrors.xjtu.edu.cn/archlinux/$repo/os/$arch
+Server = http://mirrors.zju.edu.cn/archlinux/$repo/os/$arch
+
+## Colombia
+Server = http://mirrors.atlas.net.co/archlinux/$repo/os/$arch
+Server = https://mirrors.atlas.net.co/archlinux/$repo/os/$arch
+Server = http://edgeuno-bog2.mm.fcix.net/archlinux/$repo/os/$arch
+Server = https://edgeuno-bog2.mm.fcix.net/archlinux/$repo/os/$arch
+Server = http://mirrors.udenar.edu.co/archlinux/$repo/os/$arch
+
+## Croatia
+Server = http://archlinux.iskon.hr/$repo/os/$arch
+
+## Czechia
+Server = http://mirror.dkm.cz/archlinux/$repo/os/$arch
+Server = https://mirror.dkm.cz/archlinux/$repo/os/$arch
+Server = http://ftp.fi.muni.cz/pub/linux/arch/$repo/os/$arch
+Server = http://ftp.linux.cz/pub/linux/arch/$repo/os/$arch
+Server = https://europe.mirror.pkgbuild.com/$repo/os/$arch
+Server = http://gluttony.sin.cvut.cz/arch/$repo/os/$arch
+Server = https://gluttony.sin.cvut.cz/arch/$repo/os/$arch
+Server = http://mirror.it4i.cz/arch/$repo/os/$arch
+Server = https://mirror.it4i.cz/arch/$repo/os/$arch
+Server = http://mirrors.nic.cz/archlinux/$repo/os/$arch
+Server = https://mirrors.nic.cz/archlinux/$repo/os/$arch
+Server = http://ftp.sh.cvut.cz/arch/$repo/os/$arch
+Server = https://ftp.sh.cvut.cz/arch/$repo/os/$arch
+Server = http://mirror.vpsfree.cz/archlinux/$repo/os/$arch
+
+## Denmark
+Server = http://mirrors.dotsrc.org/archlinux/$repo/os/$arch
+Server = https://mirrors.dotsrc.org/archlinux/$repo/os/$arch
+Server = http://mirror.group.one/archlinux/$repo/os/$arch
+Server = https://mirror.group.one/archlinux/$repo/os/$arch
+Server = https://mirror.safe-con.dk/archlinux/$repo/os/$arch
+
+## Ecuador
+Server = http://mirror.cedia.org.ec/archlinux/$repo/os/$arch
+Server = http://mirror.espoch.edu.ec/archlinux/$repo/os/$arch
+
+## Estonia
+Server = http://mirror.cspacehostings.com/archlinux/$repo/os/$arch
+Server = https://mirror.cspacehostings.com/archlinux/$repo/os/$arch
+Server = http://repo.br.ee/arch/$repo/os/$arch
+Server = https://repo.br.ee/arch/$repo/os/$arch
+Server = http://mirrors.xtom.ee/archlinux/$repo/os/$arch
+Server = https://mirrors.xtom.ee/archlinux/$repo/os/$arch
+
+## Finland
+Server = http://mirror.arctic.lol/ArchMirror/$repo/os/$arch
+Server = https://mirror.arctic.lol/ArchMirror/$repo/os/$arch
+Server = http://arch.mirror.far.fi/$repo/os/$arch
+Server = http://mirror.hosthink.net/archlinux/$repo/os/$arch
+Server = http://mirrors.janbruckner.de/archlinux/$repo/os/$arch
+Server = https://mirrors.janbruckner.de/archlinux/$repo/os/$arch
+Server = http://mirror.5i.fi/archlinux/$repo/os/$arch
+Server = https://mirror.5i.fi/archlinux/$repo/os/$arch
+Server = https://mirror1.sl-chat.ru/archlinux/$repo/os/$arch
+Server = https://mirror.srv.fail/archlinux/$repo/os/$arch
+Server = http://mirror.wuki.li/archlinux/$repo/os/$arch
+Server = https://mirror.wuki.li/archlinux/$repo/os/$arch
+Server = http://arch.yhtez.xyz/$repo/os/$arch
+Server = https://arch.yhtez.xyz/$repo/os/$arch
+
+## France
+Server = http://mirror.archlinux.ikoula.com/archlinux/$repo/os/$arch
+Server = https://elda.asgardius.company/archlinux/$repo/os/$arch
+Server = http://archlinux.mirrors.benatherton.com/$repo/os/$arch
+Server = http://fr.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://fr.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = http://mirror.cyberbits.eu/archlinux/$repo/os/$arch
+Server = https://mirror.cyberbits.eu/archlinux/$repo/os/$arch
+Server = http://archlinux.datagr.am/$repo/os/$arch
+Server = https://mirrors.eric.ovh/arch/$repo/os/$arch
+Server = http://mirrors.gandi.net/archlinux/$repo/os/$arch
+Server = https://mirrors.gandi.net/archlinux/$repo/os/$arch
+Server = http://archmirror.hogwarts.fr/$repo/os/$arch
+Server = https://archmirror.hogwarts.fr/$repo/os/$arch
+Server = https://mirror.ibakerserver.pt/Arch/$repo/os/$arch
+Server = http://mirror.its-tps.fr/archlinux/$repo/os/$arch
+Server = https://mirror.its-tps.fr/archlinux/$repo/os/$arch
+Server = http://mirror.jordanrey.me/archlinux/$repo/os/$arch
+Server = https://mirror.jordanrey.me/archlinux/$repo/os/$arch
+Server = https://mirrors.jtremesay.org/archlinux/$repo/os/$arch
+Server = https://arch.juline.tech/$repo/os/$arch
+Server = http://mirroir.labhouse.fr/arch/$repo/os/$arch
+Server = https://mirroir.labhouse.fr/arch/$repo/os/$arch
+Server = http://mirror.lastmikoi.net/archlinux/$repo/os/$arch
+Server = http://archlinux.mailtunnel.eu/$repo/os/$arch
+Server = https://archlinux.mailtunnel.eu/$repo/os/$arch
+Server = https://f.matthieul.dev/mirror/archlinux/$repo/os/$arch
+Server = http://mir.archlinux.fr/$repo/os/$arch
+Server = http://mirrors.celianvdb.fr/archlinux/$repo/os/$arch
+Server = https://mirrors.celianvdb.fr/archlinux/$repo/os/$arch
+Server = http://arch.nimukaito.net/$repo/os/$arch
+Server = https://arch.nimukaito.net/$repo/os/$arch
+Server = http://mirror.oldsql.cc/archlinux/$repo/os/$arch
+Server = https://mirror.oldsql.cc/archlinux/$repo/os/$arch
+Server = http://archlinux.mirrors.ovh.net/archlinux/$repo/os/$arch
+Server = https://archlinux.mirrors.ovh.net/archlinux/$repo/os/$arch
+Server = http://mirror.peeres-telecom.fr/archlinux/$repo/os/$arch
+Server = https://mirror.peeres-telecom.fr/archlinux/$repo/os/$arch
+Server = http://mirror.rznet.fr/archlinux/$repo/os/$arch
+Server = https://mirror.rznet.fr/archlinux/$repo/os/$arch
+Server = http://mirror.spaceint.fr/archlinux/$repo/os/$arch
+Server = https://mirror.spaceint.fr/archlinux/$repo/os/$arch
+Server = http://mirrors.standaloneinstaller.com/archlinux/$repo/os/$arch
+Server = https://mirror.sysa.tech/archlinux/$repo/os/$arch
+Server = http://arch.syxpi.fr/arch/$repo/os/$arch
+Server = https://arch.syxpi.fr/arch/$repo/os/$arch
+Server = https://mirror.thekinrar.fr/archlinux/$repo/os/$arch
+Server = http://mirror.theo546.fr/archlinux/$repo/os/$arch
+Server = https://mirror.theo546.fr/archlinux/$repo/os/$arch
+Server = http://mirror.trap.moe/archlinux/$repo/os/$arch
+Server = https://mirror.trap.moe/archlinux/$repo/os/$arch
+Server = http://ftp.u-strasbg.fr/linux/distributions/archlinux/$repo/os/$arch
+Server = https://mirror.wormhole.eu/archlinux/$repo/os/$arch
+Server = http://arch.yourlabs.org/$repo/os/$arch
+Server = https://arch.yourlabs.org/$repo/os/$arch
+
+## Georgia
+Server = http://archlinux.grena.ge/$repo/os/$arch
+Server = https://archlinux.grena.ge/$repo/os/$arch
+
+## Germany
+Server = http://mirror.23m.com/archlinux/$repo/os/$arch
+Server = https://mirror.23m.com/archlinux/$repo/os/$arch
+Server = http://ftp.agdsn.de/pub/mirrors/archlinux/$repo/os/$arch
+Server = https://ftp.agdsn.de/pub/mirrors/archlinux/$repo/os/$arch
+Server = https://appuals.com/archlinux/$repo/os/$arch
+Server = http://artfiles.org/archlinux.org/$repo/os/$arch
+Server = https://mirror.bethselamin.de/$repo/os/$arch
+Server = https://de.repo.c48.uk/arch/$repo/os/$arch
+Server = http://de.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://de.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = http://mirror.clientvps.com/archlinux/$repo/os/$arch
+Server = https://mirror.clientvps.com/archlinux/$repo/os/$arch
+Server = http://mirror.cmt.de/archlinux/$repo/os/$arch
+Server = https://mirror.cmt.de/archlinux/$repo/os/$arch
+Server = http://os.codefionn.eu/archlinux/$repo/os/$arch
+Server = https://os.codefionn.eu/archlinux/$repo/os/$arch
+Server = https://mirror.dogado.de/archlinux/$repo/os/$arch
+Server = https://mirror.eto.dev/arch/$repo/os/$arch
+Server = http://ftp.fau.de/archlinux/$repo/os/$arch
+Server = https://ftp.fau.de/archlinux/$repo/os/$arch
+Server = https://pkg.fef.moe/archlinux/$repo/os/$arch
+Server = https://dist-mirror.fem.tu-ilmenau.de/archlinux/$repo/os/$arch
+Server = http://mirror.fsrv.services/archlinux/$repo/os/$arch
+Server = https://mirror.fsrv.services/archlinux/$repo/os/$arch
+Server = https://mirror.gnomus.de/$repo/os/$arch
+Server = http://www.gutscheindrache.com/mirror/archlinux/$repo/os/$arch
+Server = http://ftp.gwdg.de/pub/linux/archlinux/$repo/os/$arch
+Server = https://files.hadiko.de/pub/dists/arch/$repo/os/$arch
+Server = https://archlinux.homeinfo.de/$repo/os/$arch
+Server = http://ftp.hosteurope.de/mirror/ftp.archlinux.org/$repo/os/$arch
+Server = http://ftp-stud.hs-esslingen.de/pub/Mirrors/archlinux/$repo/os/$arch
+Server = http://mirror.hugo-betrugo.de/archlinux/$repo/os/$arch
+Server = https://mirror.hugo-betrugo.de/archlinux/$repo/os/$arch
+Server = http://mirror.informatik.tu-freiberg.de/arch/$repo/os/$arch
+Server = https://mirror.informatik.tu-freiberg.de/arch/$repo/os/$arch
+Server = http://archlinux.mirror.iphh.net/$repo/os/$arch
+Server = http://arch.jensgutermuth.de/$repo/os/$arch
+Server = https://arch.jensgutermuth.de/$repo/os/$arch
+Server = https://de.arch.mirror.kescher.at/$repo/os/$arch
+Server = http://mirror.kumi.systems/archlinux/$repo/os/$arch
+Server = https://mirror.kumi.systems/archlinux/$repo/os/$arch
+Server = https://arch.kurdy.org/$repo/os/$arch
+Server = http://mirror.fra10.de.leaseweb.net/archlinux/$repo/os/$arch
+Server = https://mirror.fra10.de.leaseweb.net/archlinux/$repo/os/$arch
+Server = http://mirror.metalgamer.eu/archlinux/$repo/os/$arch
+Server = https://mirror.metalgamer.eu/archlinux/$repo/os/$arch
+Server = http://mirror.mikrogravitation.org/archlinux/$repo/os/$arch
+Server = https://mirror.mikrogravitation.org/archlinux/$repo/os/$arch
+Server = http://mirror.lcarilla.de/archlinux/$repo/os/$arch
+Server = https://mirror.lcarilla.de/archlinux/$repo/os/$arch
+Server = http://mirror.moson.org/arch/$repo/os/$arch
+Server = https://mirror.moson.org/arch/$repo/os/$arch
+Server = http://mirrors.n-ix.net/archlinux/$repo/os/$arch
+Server = https://mirrors.n-ix.net/archlinux/$repo/os/$arch
+Server = http://mirror.netcologne.de/archlinux/$repo/os/$arch
+Server = https://mirror.netcologne.de/archlinux/$repo/os/$arch
+Server = http://de.arch.niranjan.co/$repo/os/$arch
+Server = https://de.arch.niranjan.co/$repo/os/$arch
+Server = http://mirrors.niyawe.de/archlinux/$repo/os/$arch
+Server = https://mirrors.niyawe.de/archlinux/$repo/os/$arch
+Server = http://mirror.orbit-os.com/archlinux/$repo/os/$arch
+Server = https://mirror.orbit-os.com/archlinux/$repo/os/$arch
+Server = http://packages.oth-regensburg.de/archlinux/$repo/os/$arch
+Server = https://packages.oth-regensburg.de/archlinux/$repo/os/$arch
+Server = http://mirror.pagenotfound.de/archlinux/$repo/os/$arch
+Server = https://mirror.pagenotfound.de/archlinux/$repo/os/$arch
+Server = http://arch.phinau.de/$repo/os/$arch
+Server = https://arch.phinau.de/$repo/os/$arch
+Server = https://mirror.pseudoform.org/$repo/os/$arch
+Server = https://archlinux.richard-neumann.de/$repo/os/$arch
+Server = http://ftp.halifax.rwth-aachen.de/archlinux/$repo/os/$arch
+Server = https://ftp.halifax.rwth-aachen.de/archlinux/$repo/os/$arch
+Server = http://linux.rz.rub.de/archlinux/$repo/os/$arch
+Server = http://mirror.satis-faction.de/archlinux/$repo/os/$arch
+Server = https://mirror.satis-faction.de/archlinux/$repo/os/$arch
+Server = http://mirror.selfnet.de/archlinux/$repo/os/$arch
+Server = https://mirror.selfnet.de/archlinux/$repo/os/$arch
+Server = https://de-nue.soulharsh007.dev/archlinux/$repo/os/$arch
+Server = http://ftp.spline.inf.fu-berlin.de/mirrors/archlinux/$repo/os/$arch
+Server = https://ftp.spline.inf.fu-berlin.de/mirrors/archlinux/$repo/os/$arch
+Server = http://mirror.sunred.org/archlinux/$repo/os/$arch
+Server = https://mirror.sunred.org/archlinux/$repo/os/$arch
+Server = http://archlinux.thaller.ws/$repo/os/$arch
+Server = https://archlinux.thaller.ws/$repo/os/$arch
+Server = http://ftp.tu-chemnitz.de/pub/linux/archlinux/$repo/os/$arch
+Server = http://mirror.ubrco.de/archlinux/$repo/os/$arch
+Server = https://mirror.ubrco.de/archlinux/$repo/os/$arch
+Server = http://mirror.undisclose.de/archlinux/$repo/os/$arch
+Server = https://mirror.undisclose.de/archlinux/$repo/os/$arch
+Server = http://ftp.uni-bayreuth.de/linux/archlinux/$repo/os/$arch
+Server = http://ftp.uni-hannover.de/archlinux/$repo/os/$arch
+Server = http://ftp.uni-kl.de/pub/linux/archlinux/$repo/os/$arch
+Server = http://mirror.united-gameserver.de/archlinux/$repo/os/$arch
+Server = https://arch.unixpeople.org/$repo/os/$arch
+Server = http://ftp.wrz.de/pub/archlinux/$repo/os/$arch
+Server = https://ftp.wrz.de/pub/archlinux/$repo/os/$arch
+Server = http://mirror.wtnet.de/archlinux/$repo/os/$arch
+Server = https://mirror.wtnet.de/archlinux/$repo/os/$arch
+Server = http://mirrors.xtom.de/archlinux/$repo/os/$arch
+Server = https://mirrors.xtom.de/archlinux/$repo/os/$arch
+
+## Greece
+Server = http://ftp.cc.uoc.gr/mirrors/linux/archlinux/$repo/os/$arch
+Server = https://repo.greeklug.gr/data/pub/linux/archlinux/$repo/os/$arch
+Server = http://mirrors.myaegean.gr/linux/archlinux/$repo/os/$arch
+Server = http://ftp.ntua.gr/pub/linux/archlinux/$repo/os/$arch
+Server = http://ftp.otenet.gr/linux/archlinux/$repo/os/$arch
+
+## Hong Kong
+Server = https://asia.mirror.pkgbuild.com/$repo/os/$arch
+Server = http://mirror-hk.koddos.net/archlinux/$repo/os/$arch
+Server = https://mirror-hk.koddos.net/archlinux/$repo/os/$arch
+Server = http://hkg.mirror.rackspace.com/archlinux/$repo/os/$arch
+Server = https://hkg.mirror.rackspace.com/archlinux/$repo/os/$arch
+Server = https://arch-mirror.wtako.net/$repo/os/$arch
+Server = http://mirror.xtom.com.hk/archlinux/$repo/os/$arch
+Server = https://mirror.xtom.com.hk/archlinux/$repo/os/$arch
+
+## Hungary
+Server = https://ftp.ek-cer.hu/pub/mirrors/ftp.archlinux.org/$repo/os/$arch
+Server = http://archmirror.hbit.sztaki.hu/archlinux/$repo/os/$arch
+Server = http://nova.quantum-mirror.hu/mirrors/pub/archlinux/$repo/os/$arch
+Server = http://quantum-mirror.hu/mirrors/pub/archlinux/$repo/os/$arch
+Server = http://super.quantum-mirror.hu/mirrors/pub/archlinux/$repo/os/$arch
+Server = https://nova.quantum-mirror.hu/mirrors/pub/archlinux/$repo/os/$arch
+Server = https://quantum-mirror.hu/mirrors/pub/archlinux/$repo/os/$arch
+Server = https://super.quantum-mirror.hu/mirrors/pub/archlinux/$repo/os/$arch
+
+## Iceland
+Server = http://is.mirror.flokinet.net/archlinux/$repo/os/$arch
+Server = https://is.mirror.flokinet.net/archlinux/$repo/os/$arch
+Server = http://mirrors.opensource.is/archlinux/$repo/os/$arch
+Server = https://mirrors.opensource.is/archlinux/$repo/os/$arch
+Server = http://mirror.system.is/arch/$repo/os/$arch
+Server = https://mirror.system.is/arch/$repo/os/$arch
+
+## India
+Server = http://mirror.4v1.in/archlinux/$repo/os/$arch
+Server = https://mirror.4v1.in/archlinux/$repo/os/$arch
+Server = https://mirrors.abhy.me/archlinux/$repo/os/$arch
+Server = https://mirror.albony.in/archlinux/$repo/os/$arch
+Server = https://mirror.maa.albony.in/archlinux/$repo/os/$arch
+Server = https://mirror.nag.albony.in/archlinux/$repo/os/$arch
+Server = http://in.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://in.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = http://mirror.cse.iitk.ac.in/archlinux/$repo/os/$arch
+Server = https://mirror.fossindia.ovh/archlinux/$repo/os/$arch
+Server = http://in-mirror.garudalinux.org/archlinux/$repo/os/$arch
+Server = https://in-mirror.garudalinux.org/archlinux/$repo/os/$arch
+Server = http://archlinux.mirror.net.in/archlinux/$repo/os/$arch
+Server = https://archlinux.mirror.net.in/archlinux/$repo/os/$arch
+Server = http://in.arch.niranjan.co/$repo/os/$arch
+Server = https://in.arch.niranjan.co/$repo/os/$arch
+Server = http://mirrors.nxtgen.com/archlinux-mirror/$repo/os/$arch
+Server = https://mirrors.nxtgen.com/archlinux-mirror/$repo/os/$arch
+Server = http://mirrors.piconets.webwerks.in/archlinux-mirror/$repo/os/$arch
+Server = https://mirrors.piconets.webwerks.in/archlinux-mirror/$repo/os/$arch
+Server = http://mirror.sahil.world/archlinux/$repo/os/$arch
+Server = https://mirror.sahil.world/archlinux/$repo/os/$arch
+Server = http://mirrors.saswata.cc/archlinux/$repo/os/$arch
+Server = https://mirrors.saswata.cc/archlinux/$repo/os/$arch
+
+## Indonesia
+Server = http://mirror.citrahost.com/archlinux/$repo/os/$arch
+Server = https://mirror.citrahost.com/archlinux/$repo/os/$arch
+Server = http://mirror.cloudweeb.com/archlinux/$repo/os/$arch
+Server = http://mirror.faizuladib.com/archlinux/$repo/os/$arch
+Server = http://mirror.gi.co.id/archlinux/$repo/os/$arch
+Server = https://mirror.gi.co.id/archlinux/$repo/os/$arch
+Server = http://vpsmurah.jagoanhosting.com/archlinux/$repo/os/$arch
+Server = https://vpsmurah.jagoanhosting.com/archlinux/$repo/os/$arch
+Server = http://kebo.pens.ac.id/archlinux/$repo/os/$arch
+Server = http://mirror.labkom.id/archlinux/$repo/os/$arch
+Server = http://mirror.ditatompel.com/archlinux/$repo/os/$arch
+Server = https://mirror.ditatompel.com/archlinux/$repo/os/$arch
+Server = http://mirror.papua.go.id/archlinux/$repo/os/$arch
+Server = https://mirror.papua.go.id/archlinux/$repo/os/$arch
+Server = http://mirror.poliwangi.ac.id/archlinux/$repo/os/$arch
+Server = http://mirror.repository.id/archlinux/$repo/os/$arch
+Server = https://mirror.repository.id/archlinux/$repo/os/$arch
+Server = http://mirror.telkomuniversity.ac.id/archlinux/$repo/os/$arch
+Server = https://mirror.telkomuniversity.ac.id/archlinux/$repo/os/$arch
+Server = https://kacabenggala.uny.ac.id/archlinux/$repo/os/$arch
+
+## Iran
+Server = http://mirror.arvancloud.ir/archlinux/$repo/os/$arch
+Server = https://mirror.arvancloud.ir/archlinux/$repo/os/$arch
+Server = http://mirror.bardia.tech/archlinux/$repo/os/$arch
+Server = https://mirror.bardia.tech/archlinux/$repo/os/$arch
+Server = https://mirror.hakimi-soft.ir/archlinux/$repo/os/$arch
+Server = http://mirror.hostiran.ir/archlinux/$repo/os/$arch
+Server = https://mirror.hostiran.ir/archlinux/$repo/os/$arch
+Server = http://repo.iut.ac.ir/repo/archlinux/$repo/os/$arch
+Server = http://mirror.nak-mci.ir/arch/$repo/os/$arch
+
+## Israel
+Server = http://archlinux.interhost.co.il/$repo/os/$arch
+Server = https://archlinux.interhost.co.il/$repo/os/$arch
+Server = http://mirror.isoc.org.il/pub/archlinux/$repo/os/$arch
+Server = https://mirror.isoc.org.il/pub/archlinux/$repo/os/$arch
+Server = https://archlinux.mivzakim.net/$repo/os/$arch
+
+## Italy
+Server = http://it.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://it.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = http://archlinux.mirror.garr.it/archlinux/$repo/os/$arch
+Server = https://arch.mirror.hyperbit.it/$repo/os/$arch
+Server = http://archlinux.mirror.server24.net/$repo/os/$arch
+Server = https://archlinux.mirror.server24.net/$repo/os/$arch
+
+## Japan
+Server = http://mirror.aria-on-the-planet.es/archlinux/$repo/os/$arch
+Server = https://mirror.aria-on-the-planet.es/archlinux/$repo/os/$arch
+Server = http://mirrors.cat.net/archlinux/$repo/os/$arch
+Server = https://mirrors.cat.net/archlinux/$repo/os/$arch
+Server = http://jp.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://jp.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = http://ftp.tsukuba.wide.ad.jp/Linux/archlinux/$repo/os/$arch
+Server = http://mirror.hashy0917.net/archlinux/$repo/os/$arch
+Server = https://mirror.hashy0917.net/archlinux/$repo/os/$arch
+Server = http://ftp.jaist.ac.jp/pub/Linux/ArchLinux/$repo/os/$arch
+Server = https://ftp.jaist.ac.jp/pub/Linux/ArchLinux/$repo/os/$arch
+Server = http://repo.jing.rocks/archlinux/$repo/os/$arch
+Server = https://repo.jing.rocks/archlinux/$repo/os/$arch
+Server = http://www.miraa.jp/archlinux/$repo/os/$arch
+Server = https://www.miraa.jp/archlinux/$repo/os/$arch
+Server = http://mirror.nishi.network/archlinux/$repo/os/$arch
+Server = https://mirror.nishi.network/archlinux/$repo/os/$arch
+Server = https://mirror.saebasol.org/archlinux/$repo/os/$arch
+
+## Kazakhstan
+Server = http://mirror.hoster.kz/archlinux/$repo/os/$arch
+Server = https://mirror.hoster.kz/archlinux/$repo/os/$arch
+Server = http://mirror.ps.kz/archlinux/$repo/os/$arch
+Server = https://mirror.ps.kz/archlinux/$repo/os/$arch
+
+## Kenya
+Server = http://archlinux.mirror.liquidtelecom.com/$repo/os/$arch
+Server = https://archlinux.mirror.liquidtelecom.com/$repo/os/$arch
+
+## Latvia
+Server = http://archlinux.koyanet.lv/archlinux/$repo/os/$arch
+Server = https://archlinux.koyanet.lv/archlinux/$repo/os/$arch
+
+## Lithuania
+Server = http://mirrors.atviras.lt/archlinux/$repo/os/$arch
+Server = https://mirrors.atviras.lt/archlinux/$repo/os/$arch
+
+## Luxembourg
+Server = http://archmirror.xyz/archlinux/$repo/os/$arch
+Server = https://archmirror.xyz/archlinux/$repo/os/$arch
+Server = http://archlinux.mirror.root.lu/$repo/os/$arch
+
+## Mauritius
+Server = http://archlinux-mirror.cloud.mu/$repo/os/$arch
+Server = https://archlinux-mirror.cloud.mu/$repo/os/$arch
+
+## Mexico
+Server = http://lidsol.fi-b.unam.mx/archlinux/$repo/os/$arch
+Server = https://lidsol.fi-b.unam.mx/archlinux/$repo/os/$arch
+Server = https://arch.jsc.mx/$repo/os/$arch
+
+## Moldova
+Server = http://md.mirrors.hacktegic.com/archlinux/$repo/os/$arch
+Server = https://md.mirrors.hacktegic.com/archlinux/$repo/os/$arch
+Server = http://mirror.ihost.md/archlinux/$repo/os/$arch
+Server = https://mirror.ihost.md/archlinux/$repo/os/$arch
+Server = http://mirror.mangohost.net/archlinux/$repo/os/$arch
+Server = https://mirror.mangohost.net/archlinux/$repo/os/$arch
+
+## Morocco
+Server = http://mirror.abderraziq.com/archlinux/$repo/os/$arch
+Server = https://mirror.abderraziq.com/archlinux/$repo/os/$arch
+
+## Nepal
+Server = http://mirrors.nepalicloud.com/archlinux/$repo/os/$arch
+Server = https://mirrors.nepalicloud.com/archlinux/$repo/os/$arch
+
+## Netherlands
+Server = http://mirror.bouwhuis.network/archlinux/$repo/os/$arch
+Server = https://mirror.bouwhuis.network/archlinux/$repo/os/$arch
+Server = http://mirror.nl.cdn-perfprod.com/archlinux/$repo/os/$arch
+Server = https://mirror.nl.cdn-perfprod.com/archlinux/$repo/os/$arch
+Server = http://nl.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://nl.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = http://mirror.cj2.nl/archlinux/$repo/os/$arch
+Server = https://mirror.cj2.nl/archlinux/$repo/os/$arch
+Server = https://mirrors.daan.vodka/archlinux/$repo/os/$arch
+Server = http://mirrors.evoluso.com/archlinux/$repo/os/$arch
+Server = http://nl.mirror.flokinet.net/archlinux/$repo/os/$arch
+Server = https://nl.mirror.flokinet.net/archlinux/$repo/os/$arch
+Server = http://mirror.i3d.net/pub/archlinux/$repo/os/$arch
+Server = https://mirror.i3d.net/pub/archlinux/$repo/os/$arch
+Server = https://mirror.iusearchbtw.nl/$repo/os/$arch
+Server = https://arch.jeweet.net/$repo/os/$arch
+Server = http://mirror.koddos.net/archlinux/$repo/os/$arch
+Server = https://mirror.koddos.net/archlinux/$repo/os/$arch
+Server = http://arch.mirrors.lavatech.top/$repo/os/$arch
+Server = https://arch.mirrors.lavatech.top/$repo/os/$arch
+Server = http://mirror.ams1.nl.leaseweb.net/archlinux/$repo/os/$arch
+Server = https://mirror.ams1.nl.leaseweb.net/archlinux/$repo/os/$arch
+Server = http://archlinux.mirror.liteserver.nl/$repo/os/$arch
+Server = https://archlinux.mirror.liteserver.nl/$repo/os/$arch
+Server = http://mirror.lyrahosting.com/archlinux/$repo/os/$arch
+Server = https://mirror.lyrahosting.com/archlinux/$repo/os/$arch
+Server = http://mirror.mijn.host/archlinux/$repo/os/$arch
+Server = https://mirror.mijn.host/archlinux/$repo/os/$arch
+Server = http://mirror.neostrada.nl/archlinux/$repo/os/$arch
+Server = https://mirror.neostrada.nl/archlinux/$repo/os/$arch
+Server = http://ftp.nluug.nl/os/Linux/distr/archlinux/$repo/os/$arch
+Server = http://mirror.serverion.com/archlinux/$repo/os/$arch
+Server = https://mirror.serverion.com/archlinux/$repo/os/$arch
+Server = http://ftp.snt.utwente.nl/pub/os/linux/archlinux/$repo/os/$arch
+Server = http://mirror.tarellia.net/distr/archlinux/$repo/os/$arch
+Server = https://mirror.tarellia.net/distr/archlinux/$repo/os/$arch
+Server = http://mirrors.viflcraft.top/archlinux/$repo/os/$arch
+Server = https://mirrors.viflcraft.top/archlinux/$repo/os/$arch
+Server = http://archlinux.mirror.wearetriple.com/$repo/os/$arch
+Server = https://archlinux.mirror.wearetriple.com/$repo/os/$arch
+Server = http://mirror-archlinux.webruimtehosting.nl/$repo/os/$arch
+Server = https://mirror-archlinux.webruimtehosting.nl/$repo/os/$arch
+Server = http://mirrors.xtom.nl/archlinux/$repo/os/$arch
+Server = https://mirrors.xtom.nl/archlinux/$repo/os/$arch
+
+## New Caledonia
+Server = http://mirror.lagoon.nc/pub/archlinux/$repo/os/$arch
+Server = http://archlinux.nautile.nc/archlinux/$repo/os/$arch
+Server = https://archlinux.nautile.nc/archlinux/$repo/os/$arch
+
+## New Zealand
+Server = http://mirror.2degrees.nz/archlinux/$repo/os/$arch
+Server = https://mirror.2degrees.nz/archlinux/$repo/os/$arch
+Server = http://mirror.fsmg.org.nz/archlinux/$repo/os/$arch
+Server = https://mirror.fsmg.org.nz/archlinux/$repo/os/$arch
+Server = https://archlinux.ourhome.kiwi/$repo/os/$arch
+Server = http://mirror.smith.geek.nz/archlinux/$repo/os/$arch
+Server = https://mirror.smith.geek.nz/archlinux/$repo/os/$arch
+
+## North Macedonia
+Server = http://arch.softver.org.mk/archlinux/$repo/os/$arch
+Server = http://mirror.onevip.mk/archlinux/$repo/os/$arch
+Server = http://mirror.t-home.mk/archlinux/$repo/os/$arch
+Server = https://mirror.t-home.mk/archlinux/$repo/os/$arch
+
+## Norway
+Server = http://mirror.archlinux.no/$repo/os/$arch
+Server = https://mirror.archlinux.no/$repo/os/$arch
+Server = http://archlinux.uib.no/$repo/os/$arch
+Server = http://lysakermoen.com/Software/Linux/Mirrors/ArchLinux/$repo/os/$arch
+Server = https://lysakermoen.com/Software/Linux/Mirrors/ArchLinux/$repo/os/$arch
+Server = http://mirror.neuf.no/archlinux/$repo/os/$arch
+Server = https://mirror.neuf.no/archlinux/$repo/os/$arch
+Server = http://mirror.terrahost.no/linux/archlinux/$repo/os/$arch
+
+## Paraguay
+Server = http://archlinux.mirror.py/archlinux/$repo/os/$arch
+
+## Poland
+Server = https://mirror.eloteam.tk/archlinux/$repo/os/$arch
+Server = http://ftp.icm.edu.pl/pub/Linux/dist/archlinux/$repo/os/$arch
+Server = https://ftp.icm.edu.pl/pub/Linux/dist/archlinux/$repo/os/$arch
+Server = http://mirror.juniorjpdj.pl/archlinux/$repo/os/$arch
+Server = https://mirror.juniorjpdj.pl/archlinux/$repo/os/$arch
+Server = http://arch.midov.pl/arch/$repo/os/$arch
+Server = https://arch.midov.pl/arch/$repo/os/$arch
+Server = http://piotrkosoft.net/pub/mirrors/ftp.archlinux.org/$repo/os/$arch
+Server = http://ftp.psnc.pl/linux/archlinux/$repo/os/$arch
+Server = https://ftp.psnc.pl/linux/archlinux/$repo/os/$arch
+Server = http://arch.sakamoto.pl/$repo/os/$arch
+Server = https://arch.sakamoto.pl/$repo/os/$arch
+Server = http://repo.skni.umcs.pl/archlinux/$repo/os/$arch
+Server = https://repo.skni.umcs.pl/archlinux/$repo/os/$arch
+Server = http://ftp.vectranet.pl/archlinux/$repo/os/$arch
+
+## Portugal
+Server = http://mirror.barata.pt/archlinux/$repo/os/$arch
+Server = https://mirror.barata.pt/archlinux/$repo/os/$arch
+Server = http://glua.ua.pt/pub/archlinux/$repo/os/$arch
+Server = https://glua.ua.pt/pub/archlinux/$repo/os/$arch
+Server = http://mirror.leitecastro.com/archlinux/$repo/os/$arch
+Server = https://mirror.leitecastro.com/archlinux/$repo/os/$arch
+Server = http://mirrors.up.pt/pub/archlinux/$repo/os/$arch
+Server = https://mirrors.up.pt/pub/archlinux/$repo/os/$arch
+Server = http://ftp.rnl.tecnico.ulisboa.pt/pub/archlinux/$repo/os/$arch
+Server = https://ftp.rnl.tecnico.ulisboa.pt/pub/archlinux/$repo/os/$arch
+
+## Romania
+Server = http://mirrors.chroot.ro/archlinux/$repo/os/$arch
+Server = https://mirrors.chroot.ro/archlinux/$repo/os/$arch
+Server = http://mirror.efect.ro/archlinux/$repo/os/$arch
+Server = https://mirror.efect.ro/archlinux/$repo/os/$arch
+Server = http://ro.mirror.flokinet.net/archlinux/$repo/os/$arch
+Server = https://ro.mirror.flokinet.net/archlinux/$repo/os/$arch
+Server = http://mirrors.go.ro/archlinux/$repo/os/$arch
+Server = https://mirrors.go.ro/archlinux/$repo/os/$arch
+Server = http://mirrors.hosterion.ro/archlinux/$repo/os/$arch
+Server = https://mirrors.hosterion.ro/archlinux/$repo/os/$arch
+Server = http://mirrors.hostico.ro/archlinux/$repo/os/$arch
+Server = https://mirrors.hostico.ro/archlinux/$repo/os/$arch
+Server = http://archlinux.mirrors.linux.ro/$repo/os/$arch
+Server = http://mirrors.m247.ro/archlinux/$repo/os/$arch
+Server = http://mirrors.nav.ro/archlinux/$repo/os/$arch
+Server = http://ro.arch.niranjan.co/$repo/os/$arch
+Server = https://ro.arch.niranjan.co/$repo/os/$arch
+Server = http://mirrors.nxthost.com/archlinux/$repo/os/$arch
+Server = https://mirrors.nxthost.com/archlinux/$repo/os/$arch
+Server = http://mirrors.pidginhost.com/arch/$repo/os/$arch
+Server = https://mirrors.pidginhost.com/arch/$repo/os/$arch
+
+## Russia
+Server = http://archlinux.gay/archlinux/$repo/os/$arch
+Server = https://archlinux.gay/archlinux/$repo/os/$arch
+Server = http://ru.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://ru.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = http://mirror.kamtv.ru/archlinux/$repo/os/$arch
+Server = https://mirror.kamtv.ru/archlinux/$repo/os/$arch
+Server = http://mirror.kpfu.ru/archlinux/$repo/os/$arch
+Server = https://mirror.kpfu.ru/archlinux/$repo/os/$arch
+Server = http://mirror.nw-sys.ru/archlinux/$repo/os/$arch
+Server = https://mirror.nw-sys.ru/archlinux/$repo/os/$arch
+Server = http://mirrors.powernet.com.ru/archlinux/$repo/os/$arch
+Server = http://repository.su/archlinux/$repo/os/$arch
+Server = https://repository.su/archlinux/$repo/os/$arch
+Server = http://mirror.rol.ru/archlinux/$repo/os/$arch
+Server = https://mirror.rol.ru/archlinux/$repo/os/$arch
+Server = http://web.sketserv.ru/archlinux/$repo/os/$arch
+Server = https://web.sketserv.ru/archlinux/$repo/os/$arch
+Server = https://mirror2.sl-chat.ru/archlinux/$repo/os/$arch
+Server = https://mirror3.sl-chat.ru/archlinux/$repo/os/$arch
+Server = http://mirror.truenetwork.ru/archlinux/$repo/os/$arch
+Server = https://mirror.truenetwork.ru/archlinux/$repo/os/$arch
+Server = http://mirror.yandex.ru/archlinux/$repo/os/$arch
+Server = https://mirror.yandex.ru/archlinux/$repo/os/$arch
+Server = http://archlinux.zepto.cloud/$repo/os/$arch
+
+## Réunion
+Server = http://arch.mithril.re/$repo/os/$arch
+
+## Saudi Arabia
+Server = http://sa.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://sa.mirrors.cicku.me/archlinux/$repo/os/$arch
+
+## Serbia
+Server = http://arch.petarmaric.com/$repo/os/$arch
+Server = http://mirror.pmf.kg.ac.rs/archlinux/$repo/os/$arch
+Server = http://mirror1.sox.rs/archlinux/$repo/os/$arch
+Server = https://mirror1.sox.rs/archlinux/$repo/os/$arch
+
+## Singapore
+Server = http://mirror.0x.sg/archlinux/$repo/os/$arch
+Server = https://mirror.0x.sg/archlinux/$repo/os/$arch
+Server = http://mirror.aktkn.sg/archlinux/$repo/os/$arch
+Server = https://mirror.aktkn.sg/archlinux/$repo/os/$arch
+Server = http://sg.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://sg.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://download.nus.edu.sg/mirror/archlinux/$repo/os/$arch
+Server = http://mirror.freedif.org/archlinux/$repo/os/$arch
+Server = https://mirror.freedif.org/archlinux/$repo/os/$arch
+Server = http://mirror.guillaumea.fr/archlinux/$repo/os/$arch
+Server = https://mirror.guillaumea.fr/archlinux/$repo/os/$arch
+Server = http://mirror.jingk.ai/archlinux/$repo/os/$arch
+Server = https://mirror.jingk.ai/archlinux/$repo/os/$arch
+Server = http://sg.arch.niranjan.co/$repo/os/$arch
+Server = https://sg.arch.niranjan.co/$repo/os/$arch
+Server = http://ossmirror.mycloud.services/os/linux/archlinux/$repo/os/$arch
+Server = http://mirror.sg.gs/archlinux/$repo/os/$arch
+Server = https://mirror.sg.gs/archlinux/$repo/os/$arch
+
+## Slovakia
+Server = http://mirror.lnx.sk/pub/linux/archlinux/$repo/os/$arch
+Server = https://mirror.lnx.sk/pub/linux/archlinux/$repo/os/$arch
+Server = http://tux.rainside.sk/archlinux/$repo/os/$arch
+
+## Slovenia
+Server = https://www.sooftware.com/mirrors/Arch-Linux/$repo/os/$arch
+Server = http://mirror.tux.si/arch/$repo/os/$arch
+Server = https://mirror.tux.si/arch/$repo/os/$arch
+
+## South Africa
+Server = http://archlinux.za.mirror.allworldit.com/archlinux/$repo/os/$arch
+Server = https://archlinux.za.mirror.allworldit.com/archlinux/$repo/os/$arch
+Server = http://za.mirror.archlinux-br.org/$repo/os/$arch
+Server = http://za.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://za.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = http://mirror.is.co.za/mirror/archlinux.org/$repo/os/$arch
+Server = http://mirrors.urbanwave.co.za/archlinux/$repo/os/$arch
+Server = https://mirrors.urbanwave.co.za/archlinux/$repo/os/$arch
+
+## South Korea
+Server = http://kr.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://kr.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = http://ftp.kaist.ac.kr/ArchLinux/$repo/os/$arch
+Server = http://mirror.funami.tech/arch/$repo/os/$arch
+Server = https://mirror.funami.tech/arch/$repo/os/$arch
+Server = http://ftp.harukasan.org/archlinux/$repo/os/$arch
+Server = https://ftp.harukasan.org/archlinux/$repo/os/$arch
+Server = http://ftp.lanet.kr/pub/archlinux/$repo/os/$arch
+Server = https://ftp.lanet.kr/pub/archlinux/$repo/os/$arch
+Server = http://mirror.morgan.kr/archlinux/$repo/os/$arch
+Server = https://mirror.morgan.kr/archlinux/$repo/os/$arch
+Server = http://mirror.siwoo.org/archlinux/$repo/os/$arch
+Server = https://mirror.siwoo.org/archlinux/$repo/os/$arch
+Server = http://mirror.yuki.net.uk/archlinux/$repo/os/$arch
+Server = https://mirror.yuki.net.uk/archlinux/$repo/os/$arch
+
+## Spain
+Server = http://es.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://es.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://mirror.cloroformo.org/archlinux/$repo/os/$arch
+Server = http://mirror.librelabucm.org/archlinux/$repo/os/$arch
+Server = https://mirror.librelabucm.org/archlinux/$repo/os/$arch
+Server = http://mirrors.marquitos.space/archlinux/$repo/os/$arch
+Server = https://mirrors.marquitos.space/archlinux/$repo/os/$arch
+Server = https://nox.panibrez.com/archlinux/$repo/os/$arch
+Server = http://mirror.raiolanetworks.com/archlinux/$repo/os/$arch
+Server = https://mirror.raiolanetworks.com/archlinux/$repo/os/$arch
+Server = http://ftp.rediris.es/mirror/archlinux/$repo/os/$arch
+
+## Sweden
+Server = http://mirror.accum.se/mirror/archlinux/$repo/os/$arch
+Server = https://mirror.accum.se/mirror/archlinux/$repo/os/$arch
+Server = https://mirror.braindrainlan.nu/archlinux/$repo/os/$arch
+Server = http://ftpmirror.infania.net/mirror/archlinux/$repo/os/$arch
+Server = https://ftp.ludd.ltu.se/mirrors/archlinux/$repo/os/$arch
+Server = http://ftp.lysator.liu.se/pub/archlinux/$repo/os/$arch
+Server = https://ftp.lysator.liu.se/pub/archlinux/$repo/os/$arch
+Server = http://mirror.bahnhof.net/pub/archlinux/$repo/os/$arch
+Server = https://mirror.bahnhof.net/pub/archlinux/$repo/os/$arch
+Server = http://ftp.myrveln.se/pub/linux/archlinux/$repo/os/$arch
+Server = https://ftp.myrveln.se/pub/linux/archlinux/$repo/os/$arch
+Server = https://mirror.osbeck.com/archlinux/$repo/os/$arch
+
+## Switzerland
+Server = http://pkg.adfinis-on-exoscale.ch/archlinux-pkgbuild/$repo/os/$arch
+Server = http://pkg.adfinis-on-exoscale.ch/archlinux/$repo/os/$arch
+Server = https://pkg.adfinis-on-exoscale.ch/archlinux-pkgbuild/$repo/os/$arch
+Server = https://pkg.adfinis-on-exoscale.ch/archlinux/$repo/os/$arch
+Server = http://pkg.adfinis.com/archlinux/$repo/os/$arch
+Server = https://pkg.adfinis.com/archlinux/$repo/os/$arch
+Server = http://ch.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://ch.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = http://mirror.init7.net/archlinux/$repo/os/$arch
+Server = https://mirror.init7.net/archlinux/$repo/os/$arch
+Server = http://mirror.metanet.ch/archlinux/$repo/os/$arch
+Server = https://mirror.metanet.ch/archlinux/$repo/os/$arch
+Server = http://mirror.puzzle.ch/archlinux/$repo/os/$arch
+Server = https://mirror.puzzle.ch/archlinux/$repo/os/$arch
+Server = https://theswissbay.ch/archlinux/$repo/os/$arch
+Server = https://mirror.ungleich.ch/mirror/packages/archlinux/$repo/os/$arch
+Server = https://mirror.worldhotspot.org/archlinux/$repo/os/$arch
+
+## Taiwan
+Server = http://mirror.archlinux.tw/ArchLinux/$repo/os/$arch
+Server = https://mirror.archlinux.tw/ArchLinux/$repo/os/$arch
+Server = http://archlinux.ccns.ncku.edu.tw/archlinux/$repo/os/$arch
+Server = https://archlinux.ccns.ncku.edu.tw/archlinux/$repo/os/$arch
+Server = http://tw.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://tw.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = http://free.nchc.org.tw/arch/$repo/os/$arch
+Server = https://free.nchc.org.tw/arch/$repo/os/$arch
+Server = https://ncuesaweb.ncue.edu.tw/linux/archlinux/$repo/os/$arch
+Server = http://archlinux.cs.nycu.edu.tw/$repo/os/$arch
+Server = https://archlinux.cs.nycu.edu.tw/$repo/os/$arch
+Server = http://ftp.tku.edu.tw/Linux/ArchLinux/$repo/os/$arch
+Server = http://mirror.twds.com.tw/archlinux/$repo/os/$arch
+Server = https://mirror.twds.com.tw/archlinux/$repo/os/$arch
+Server = http://ftp.yzu.edu.tw/Linux/archlinux/$repo/os/$arch
+Server = https://ftp.yzu.edu.tw/Linux/archlinux/$repo/os/$arch
+
+## Thailand
+Server = https://mirror.cyberbits.asia/archlinux/$repo/os/$arch
+Server = http://mirror.kku.ac.th/archlinux/$repo/os/$arch
+Server = https://mirror.kku.ac.th/archlinux/$repo/os/$arch
+Server = http://mirror2.totbb.net/archlinux/$repo/os/$arch
+
+## Türkiye
+Server = http://ftp.linux.org.tr/archlinux/$repo/os/$arch
+Server = http://depo.turkiye.linux.web.tr/archlinux/$repo/os/$arch
+Server = https://depo.turkiye.linux.web.tr/archlinux/$repo/os/$arch
+Server = https://tr.arch.niranjan.co/$repo/os/$arch
+Server = http://mirror.timtal.com.tr/archlinux/$repo/os/$arch
+Server = https://mirror.timtal.com.tr/archlinux/$repo/os/$arch
+Server = http://mirror.veriteknik.net.tr/archlinux/$repo/os/$arch
+
+## Ukraine
+Server = http://archlinux.astra.in.ua/$repo/os/$arch
+Server = https://archlinux.astra.in.ua/$repo/os/$arch
+Server = http://repo.hyron.dev/archlinux/$repo/os/$arch
+Server = https://repo.hyron.dev/archlinux/$repo/os/$arch
+Server = http://fastmirror.pp.ua/archlinux/$repo/os/$arch
+Server = https://fastmirror.pp.ua/archlinux/$repo/os/$arch
+Server = http://mirror.hostiko.network/archlinux/$repo/os/$arch
+Server = https://mirror.hostiko.network/archlinux/$repo/os/$arch
+Server = http://archlinux.ip-connect.vn.ua/$repo/os/$arch
+Server = https://archlinux.ip-connect.vn.ua/$repo/os/$arch
+Server = http://mirror.mirohost.net/archlinux/$repo/os/$arch
+Server = https://mirror.mirohost.net/archlinux/$repo/os/$arch
+Server = http://mirrors.nix.org.ua/linux/archlinux/$repo/os/$arch
+Server = https://mirrors.nix.org.ua/linux/archlinux/$repo/os/$arch
+Server = http://mirrors.reitarovskyi.tech/archlinux/$repo/os/$arch
+Server = https://mirrors.reitarovskyi.tech/archlinux/$repo/os/$arch
+
+## United Arab Emirates
+Server = https://mirror.hafeezh.com/archlinux/$repo/os/$arch
+
+## United Kingdom
+Server = http://archlinux.uk.mirror.allworldit.com/archlinux/$repo/os/$arch
+Server = https://archlinux.uk.mirror.allworldit.com/archlinux/$repo/os/$arch
+Server = http://mirror.bytemark.co.uk/archlinux/$repo/os/$arch
+Server = https://mirror.bytemark.co.uk/archlinux/$repo/os/$arch
+Server = https://repo.c48.uk/arch/$repo/os/$arch
+Server = http://gb.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://gb.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://london.mirror.pkgbuild.com/$repo/os/$arch
+Server = http://mirrors.gethosted.online/archlinux/$repo/os/$arch
+Server = https://mirrors.gethosted.online/archlinux/$repo/os/$arch
+Server = http://mirrors.manchester.m247.com/arch-linux/$repo/os/$arch
+Server = http://mirrors.melbourne.co.uk/archlinux/$repo/os/$arch
+Server = https://mirrors.melbourne.co.uk/archlinux/$repo/os/$arch
+Server = http://mirror.infernocomms.net/archlinux/$repo/os/$arch
+Server = https://mirror.infernocomms.net/archlinux/$repo/os/$arch
+Server = http://www.mirrorservice.org/sites/ftp.archlinux.org/$repo/os/$arch
+Server = https://www.mirrorservice.org/sites/ftp.archlinux.org/$repo/os/$arch
+Server = http://mirror.netweaver.uk/archlinux/$repo/os/$arch
+Server = https://mirror.netweaver.uk/archlinux/$repo/os/$arch
+Server = http://lon.mirror.rackspace.com/archlinux/$repo/os/$arch
+Server = https://lon.mirror.rackspace.com/archlinux/$repo/os/$arch
+Server = http://mirror.server.net/archlinux/$repo/os/$arch
+Server = https://mirror.server.net/archlinux/$repo/os/$arch
+Server = http://arch.serverspace.co.uk/arch/$repo/os/$arch
+Server = https://repo.slithery.uk/$repo/os/$arch
+Server = https://mirror.st2projects.com/archlinux/$repo/os/$arch
+Server = http://mirrors.ukfast.co.uk/sites/archlinux.org/$repo/os/$arch
+Server = https://mirrors.ukfast.co.uk/sites/archlinux.org/$repo/os/$arch
+Server = http://mirror.cov.ukservers.com/archlinux/$repo/os/$arch
+Server = https://mirror.cov.ukservers.com/archlinux/$repo/os/$arch
+Server = http://mirror.vinehost.net/archlinux/$repo/os/$arch
+Server = https://mirror.vinehost.net/archlinux/$repo/os/$arch
+Server = https://mirrors.xhosts.co.uk/arch/$repo/os/$arch
+
+## United States
+Server = http://mirrors.acm.wpi.edu/archlinux/$repo/os/$arch
+Server = http://mirror.adectra.com/archlinux/$repo/os/$arch
+Server = https://mirror.adectra.com/archlinux/$repo/os/$arch
+Server = http://mirrors.advancedhosters.com/archlinux/$repo/os/$arch
+Server = http://mirrors.aggregate.org/archlinux/$repo/os/$arch
+Server = https://mirror.akane.network/archmirror/$repo/os/$arch
+Server = http://il.us.mirror.archlinux-br.org/$repo/os/$arch
+Server = https://archlinux.doridian.net/$repo/os/$arch
+Server = http://mirror.arizona.edu/archlinux/$repo/os/$arch
+Server = https://mirror.arizona.edu/archlinux/$repo/os/$arch
+Server = http://arlm.tyzoid.com/$repo/os/$arch
+Server = https://arlm.tyzoid.com/$repo/os/$arch
+Server = https://mirror.ava.dev/archlinux/$repo/os/$arch
+Server = http://mirrors.bjg.at/arch/$repo/os/$arch
+Server = https://mirrors.bjg.at/arch/$repo/os/$arch
+Server = http://mirrors.bloomu.edu/archlinux/$repo/os/$arch
+Server = https://mirrors.bloomu.edu/archlinux/$repo/os/$arch
+Server = http://ca.us.mirror.archlinux-br.org/$repo/os/$arch
+Server = http://mirrors.cat.pdx.edu/archlinux/$repo/os/$arch
+Server = http://mirror.cc.columbia.edu/pub/linux/archlinux/$repo/os/$arch
+Server = http://us.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = https://us.mirrors.cicku.me/archlinux/$repo/os/$arch
+Server = http://mirror.clarkson.edu/archlinux/$repo/os/$arch
+Server = https://mirror.clarkson.edu/archlinux/$repo/os/$arch
+Server = http://mirror.colonelhosting.com/archlinux/$repo/os/$arch
+Server = https://mirror.colonelhosting.com/archlinux/$repo/os/$arch
+Server = http://arch.mirror.constant.com/$repo/os/$arch
+Server = https://arch.mirror.constant.com/$repo/os/$arch
+Server = http://mirror.cs.pitt.edu/archlinux/$repo/os/$arch
+Server = http://mirror.cs.vt.edu/pub/ArchLinux/$repo/os/$arch
+Server = http://mirror.cybersecurity.nmt.edu/archlinux/$repo/os/$arch
+Server = https://mirror.cybersecurity.nmt.edu/archlinux/$repo/os/$arch
+Server = http://distro.ibiblio.org/archlinux/$repo/os/$arch
+Server = http://mirror.ette.biz/archlinux/$repo/os/$arch
+Server = https://mirror.ette.biz/archlinux/$repo/os/$arch
+Server = http://codingflyboy.mm.fcix.net/archlinux/$repo/os/$arch
+Server = http://coresite.mm.fcix.net/archlinux/$repo/os/$arch
+Server = http://forksystems.mm.fcix.net/archlinux/$repo/os/$arch
+Server = http://irltoolkit.mm.fcix.net/archlinux/$repo/os/$arch
+Server = http://mirror.fcix.net/archlinux/$repo/os/$arch
+Server = http://mnvoip.mm.fcix.net/archlinux/$repo/os/$arch
+Server = http://nnenix.mm.fcix.net/archlinux/$repo/os/$arch
+Server = http://nocix.mm.fcix.net/archlinux/$repo/os/$arch
+Server = http://ohioix.mm.fcix.net/archlinux/$repo/os/$arch
+Server = http://opencolo.mm.fcix.net/archlinux/$repo/os/$arch
+Server = http://ridgewireless.mm.fcix.net/archlinux/$repo/os/$arch
+Server = http://southfront.mm.fcix.net/archlinux/$repo/os/$arch
+Server = http://uvermont.mm.fcix.net/archlinux/$repo/os/$arch
+Server = http://volico.mm.fcix.net/archlinux/$repo/os/$arch
+Server = http://ziply.mm.fcix.net/archlinux/$repo/os/$arch
+Server = https://codingflyboy.mm.fcix.net/archlinux/$repo/os/$arch
+Server = https://coresite.mm.fcix.net/archlinux/$repo/os/$arch
+Server = https://forksystems.mm.fcix.net/archlinux/$repo/os/$arch
+Server = https://irltoolkit.mm.fcix.net/archlinux/$repo/os/$arch
+Server = https://mirror.fcix.net/archlinux/$repo/os/$arch
+Server = https://mnvoip.mm.fcix.net/archlinux/$repo/os/$arch
+Server = https://nnenix.mm.fcix.net/archlinux/$repo/os/$arch
+Server = https://nocix.mm.fcix.net/archlinux/$repo/os/$arch
+Server = https://ohioix.mm.fcix.net/archlinux/$repo/os/$arch
+Server = https://opencolo.mm.fcix.net/archlinux/$repo/os/$arch
+Server = https://ridgewireless.mm.fcix.net/archlinux/$repo/os/$arch
+Server = https://southfront.mm.fcix.net/archlinux/$repo/os/$arch
+Server = https://uvermont.mm.fcix.net/archlinux/$repo/os/$arch
+Server = https://volico.mm.fcix.net/archlinux/$repo/os/$arch
+Server = https://ziply.mm.fcix.net/archlinux/$repo/os/$arch
+Server = http://mirror.fossable.org/archlinux/$repo/os/$arch
+Server = https://america.mirror.pkgbuild.com/$repo/os/$arch
+Server = http://mirrors.gigenet.com/archlinux/$repo/os/$arch
+Server = http://arch.goober.cloud/$repo/os/$arch
+Server = https://arch.goober.cloud/$repo/os/$arch
+Server = http://www.gtlib.gatech.edu/pub/archlinux/$repo/os/$arch
+Server = http://mirror.hasphetica.win/archlinux/$repo/os/$arch
+Server = https://mirror.hasphetica.win/archlinux/$repo/os/$arch
+Server = https://mirror.hodgepodge.dev/archlinux/$repo/os/$arch
+Server = http://mirror.hostup.org/archlinux/$repo/os/$arch
+Server = https://mirror.hostup.org/archlinux/$repo/os/$arch
+Server = http://arch.hu.fo/archlinux/$repo/os/$arch
+Server = https://arch.hu.fo/archlinux/$repo/os/$arch
+Server = http://repo.ialab.dsu.edu/archlinux/$repo/os/$arch
+Server = https://repo.ialab.dsu.edu/archlinux/$repo/os/$arch
+Server = http://mirrors.iu13.net/archlinux/$repo/os/$arch
+Server = https://mirrors.iu13.net/archlinux/$repo/os/$arch
+Server = https://arch.mirror.k0.ae/$repo/os/$arch
+Server = http://mirrors.kernel.org/archlinux/$repo/os/$arch
+Server = https://mirrors.kernel.org/archlinux/$repo/os/$arch
+Server = http://mirror.sfo12.us.leaseweb.net/archlinux/$repo/os/$arch
+Server = http://mirror.wdc1.us.leaseweb.net/archlinux/$repo/os/$arch
+Server = https://mirror.sfo12.us.leaseweb.net/archlinux/$repo/os/$arch
+Server = https://mirror.wdc1.us.leaseweb.net/archlinux/$repo/os/$arch
+Server = http://mirrors.liquidweb.com/archlinux/$repo/os/$arch
+Server = http://mirror.lty.me/archlinux/$repo/os/$arch
+Server = https://mirror.lty.me/archlinux/$repo/os/$arch
+Server = http://mirrors.lug.mtu.edu/archlinux/$repo/os/$arch
+Server = https://mirrors.lug.mtu.edu/archlinux/$repo/os/$arch
+Server = https://m.lqy.me/arch/$repo/os/$arch
+Server = http://archlinux.macarne.com/$repo/os/$arch
+Server = https://archlinux.macarne.com/$repo/os/$arch
+Server = https://arch-mirror.marcusspencer.xyz:4443/archlinux/$repo/os/$arch
+Server = http://mirror.math.princeton.edu/pub/archlinux/$repo/os/$arch
+Server = http://mirror.metrocast.net/archlinux/$repo/os/$arch
+Server = http://mirror.kaminski.io/archlinux/$repo/os/$arch
+Server = https://mirror.kaminski.io/archlinux/$repo/os/$arch
+Server = http://iad.mirrors.misaka.one/archlinux/$repo/os/$arch
+Server = https://iad.mirrors.misaka.one/archlinux/$repo/os/$arch
+Server = http://repo.miserver.it.umich.edu/archlinux/$repo/os/$arch
+Server = http://mirrors.mit.edu/archlinux/$repo/os/$arch
+Server = https://mirrors.mit.edu/archlinux/$repo/os/$arch
+Server = http://us.arch.niranjan.co/$repo/os/$arch
+Server = https://us.arch.niranjan.co/$repo/os/$arch
+Server = http://mirrors.ocf.berkeley.edu/archlinux/$repo/os/$arch
+Server = https://mirrors.ocf.berkeley.edu/archlinux/$repo/os/$arch
+Server = http://archmirror1.octyl.net/$repo/os/$arch
+Server = https://archmirror1.octyl.net/$repo/os/$arch
+Server = http://ftp.osuosl.org/pub/archlinux/$repo/os/$arch
+Server = https://ftp.osuosl.org/pub/archlinux/$repo/os/$arch
+Server = http://arch.mirrors.pair.com/$repo/os/$arch
+Server = https://mirror.pilotfiber.com/archlinux/$repo/os/$arch
+Server = http://dfw.mirror.rackspace.com/archlinux/$repo/os/$arch
+Server = http://iad.mirror.rackspace.com/archlinux/$repo/os/$arch
+Server = http://ord.mirror.rackspace.com/archlinux/$repo/os/$arch
+Server = https://dfw.mirror.rackspace.com/archlinux/$repo/os/$arch
+Server = https://iad.mirror.rackspace.com/archlinux/$repo/os/$arch
+Server = https://ord.mirror.rackspace.com/archlinux/$repo/os/$arch
+Server = http://mirrors.radwebhosting.com/archlinux/$repo/os/$arch
+Server = https://mirrors.radwebhosting.com/archlinux/$repo/os/$arch
+Server = http://plug-mirror.rcac.purdue.edu/archlinux/$repo/os/$arch
+Server = https://plug-mirror.rcac.purdue.edu/archlinux/$repo/os/$arch
+Server = http://mirrors.rit.edu/archlinux/$repo/os/$arch
+Server = https://mirrors.rit.edu/archlinux/$repo/os/$arch
+Server = http://mirrors.rutgers.edu/archlinux/$repo/os/$arch
+Server = https://mirrors.rutgers.edu/archlinux/$repo/os/$arch
+Server = http://us-1.arch-linux.mirror.shieldblaze.com/$repo/os/$arch
+Server = https://us-1.arch-linux.mirror.shieldblaze.com/$repo/os/$arch
+Server = http://mirror.siena.edu/archlinux/$repo/os/$arch
+Server = http://mirrors.sonic.net/archlinux/$repo/os/$arch
+Server = https://mirrors.sonic.net/archlinux/$repo/os/$arch
+Server = https://us-mnz.soulharsh007.dev/archlinux/$repo/os/$arch
+Server = http://mirror.phx1.us.spryservers.net/archlinux/$repo/os/$arch
+Server = https://mirror.phx1.us.spryservers.net/archlinux/$repo/os/$arch
+Server = http://arch.mirror.square-r00t.net/$repo/os/$arch
+Server = https://arch.mirror.square-r00t.net/$repo/os/$arch
+Server = http://mirror.stjschools.org/arch/$repo/os/$arch
+Server = https://mirror.stjschools.org/arch/$repo/os/$arch
+Server = http://ftp.sudhip.com/archlinux/$repo/os/$arch
+Server = https://ftp.sudhip.com/archlinux/$repo/os/$arch
+Server = http://mirror.pit.teraswitch.com/archlinux/$repo/os/$arch
+Server = https://mirror.pit.teraswitch.com/archlinux/$repo/os/$arch
+Server = https://mirror.theash.xyz/arch/$repo/os/$arch
+Server = http://mirror.umd.edu/archlinux/$repo/os/$arch
+Server = https://mirror.umd.edu/archlinux/$repo/os/$arch
+Server = http://mirrors.vectair.net/archlinux/$repo/os/$arch
+Server = https://mirrors.vectair.net/archlinux/$repo/os/$arch
+Server = http://mirror.vtti.vt.edu/archlinux/$repo/os/$arch
+Server = http://wcbmedia.io:8000/$repo/os/$arch
+Server = http://mirrors.xmission.com/archlinux/$repo/os/$arch
+Server = http://mirrors.xtom.com/archlinux/$repo/os/$arch
+Server = https://mirrors.xtom.com/archlinux/$repo/os/$arch
+Server = https://mirror.zackmyers.io/archlinux/$repo/os/$arch
+Server = https://zxcvfdsa.com/arch/$repo/os/$arch
+
+## Uzbekistan
+Server = http://mirror.dc.uz/arch/$repo/os/$arch
+Server = https://mirror.dc.uz/arch/$repo/os/$arch
+
+## Vietnam
+Server = http://mirror.bizflycloud.vn/archlinux/$repo/os/$arch
+Server = https://mirrors.huongnguyen.dev/arch/$repo/os/$arch
+Server = https://mirrors.nguyenhoang.cloud/archlinux/$repo/os/$arch
+Server = http://mirrors.twilight.fyi/archlinux/$repo/os/$arch
+Server = https://mirrors.twilight.fyi/archlinux/$repo/os/$arch
+
+
